@@ -1,6 +1,6 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/ILocking.hpp>
-#include <threadpoolex/core/INotifier.hpp>
+#include <threadpoolex/core/TLocking.hpp>
+#include <threadpoolex/core/TNotifier.hpp>
 #include <threadpoolex/core/RAII.hpp>
 
 #include <vector>

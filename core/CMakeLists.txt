@@ -12,8 +12,8 @@ set(${_project_name}_${_component_name}_INCLUDE_DIR
 set(${_project_name}_${_component_name}_HEADERS 
     include/threadpoolex/core/export.hpp
     include/threadpoolex/core/ITask.hpp
-    include/threadpoolex/core/INotifier.hpp
-    include/threadpoolex/core/ILocking.hpp
+    include/threadpoolex/core/TNotifier.hpp
+    include/threadpoolex/core/TLocking.hpp
     include/threadpoolex/core/IThreadPool.hpp
     include/threadpoolex/core/RAII.hpp
     CACHE INTERNAL "${_project_name}_${_component_name} headers.")
@@ -53,7 +53,7 @@ target_link_libraries(
 # Put a list of test sources into the cache.
 #
 set(${_project_name}_${_component_name}_TESTS
-   test/fake_test.cpp
+   test/TLocking_test.cpp
     CACHE INTERNAL "${_project_name}_${_component_name} tests")
 
 #
