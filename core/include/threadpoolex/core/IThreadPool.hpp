@@ -7,7 +7,7 @@
 
 namespace threadpoolex {
 namespace core {
-
+//--------------------------------------------------------------
 class IThreadPool
 {
 public:
@@ -20,8 +20,8 @@ public:
     virtual void AddTasks(const std::vector<ITask::Ptr>&) = 0;
     virtual void AddTaskToTop(ITask::Ptr) = 0;
 };
-
+//--------------------------------------------------------------
 IThreadPool::Ptr CreateThreadPool(unsigned int aNumberThreads);
-
+//--------------------------------------------------------------
 }
 }

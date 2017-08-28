@@ -8,8 +8,19 @@ namespace threadpoolex {
 namespace core {
 
 //--------------------------------------------------------------
+class IRAII
+{
+public:
+    using Ptr = std::shared_ptr<IRAII>;
+
+public:
+    virtual ~IRAII() = default;
+};
+
+//--------------------------------------------------------------
 template <typename Type>
 class CRAII
+    :public IRAII
 {
 public:
     using TypeFunction = std::function<void(Type&)>;
@@ -34,6 +45,7 @@ private:
 //--------------------------------------------------------------
 template <typename Type>
 class CRAII <std::shared_ptr<Type>>
+    :public IRAII
 {
 public:
     using TypeFunction = std::function<void(std::shared_ptr<Type>)>;
@@ -74,6 +86,26 @@ class lock_guard_ex <std::shared_ptr<Type>>
 public:
     lock_guard_ex(std::shared_ptr<Type> aObj)
         :CRAII(aObj, [](std::shared_ptr<Type> aObj) {aObj->lock(); }, [](std::shared_ptr<Type> aObj) {aObj->unlock(); })
+    {}
+};
+//--------------------------------------------------------------
+template<typename Type>
+class exclusive_lock_guard_ex
+    :public CRAII <Type>
+{
+public:
+    exclusive_lock_guard_ex(Type& aObj)
+        :CRAII(aObj, [](Type& aObj) {aObj.exclusive_lock(); }, [](Type& aObj) {aObj.exclusive_unlock(); })
+    {}
+};
+
+template<typename Type>
+class exclusive_lock_guard_ex <std::shared_ptr<Type>>
+    :public CRAII <std::shared_ptr<Type>>
+{
+public:
+    exclusive_lock_guard_ex(std::shared_ptr<Type> aObj)
+        :CRAII(aObj, [](std::shared_ptr<Type> aObj) {aObj->exclusive_lock(); }, [](std::shared_ptr<Type> aObj) {aObj->exclusive_unlock(); })
     {}
 };
 //--------------------------------------------------------------

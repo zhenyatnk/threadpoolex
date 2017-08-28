@@ -12,7 +12,7 @@ namespace core {
 namespace {
 //---------------------------------------------------------------
 
-using TDequeTasks = TNotifier<TLocking<std::deque<ITask::Ptr>>>;
+using TDequeTasks = TNotifier<TLockingEx<std::deque<ITask::Ptr>>>;
 
 //---------------------------------------------------------------
 class IThread
@@ -126,21 +126,21 @@ CThreadPool::CThreadPool(unsigned int aNumberThreads)
 
 void CThreadPool::AddTask(ITask::Ptr aTask)
 {
-    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_back(aTask);
     m_Tasks->notify_one();
 }
 
 void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
 {
-    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
     m_Tasks->notify_all();
 }
 
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
 {
-    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_front(aTask);
     m_Tasks->notify_one();
 }
