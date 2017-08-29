@@ -1,6 +1,7 @@
 #pragma once
 
 #include <threadpoolex/core/ITask.hpp>
+#include <threadpoolex/version/version.hpp>
 
 #include <memory>
 #include <vector>

@@ -32,7 +32,7 @@ find_package(Threads REQUIRED)
 enable_testing()
 
 configure_file("${CMAKE_CURRENT_LIST_DIR}/version/version.hpp.cmake.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/version/version.hpp")
+               "${CMAKE_CURRENT_BINARY_DIR}/binary_include/${_project_name}/version/version.hpp")
 
 #
 # Add components subdirectories.

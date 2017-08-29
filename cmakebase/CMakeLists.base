@@ -18,6 +18,10 @@ set(${_project_name}_${_component_name}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/
 # Set a root directory for include files.
 set(${_project_name}_${_component_name}_PRIVATE_INCLUDE_DIR ${_private_includes_directory}
     CACHE INTERNAL "${_project_name}_${_component_name} private headers directory.")
+    
+# Set a directory for version file.
+set(${_project_name}_${_component_name}_PRIVATE_BINARY_DIR ${CMAKE_BINARY_DIR}/binary_include
+    CACHE INTERNAL "${_project_name}_${_component_name} private binary headers directory.")
 
 # Put a list of header files into the cache.
 set(${_project_name}_${_component_name}_HEADERS ${_headers} 
@@ -33,8 +37,10 @@ set(${_project_name}_${_component_name}_SOURCES ${_sources}
 
 # Put a list of private sources into the cache.
 set(${_project_name}_${_component_name}_PRIVATE_SOURCES ${_private_sources}
-    CACHE INTERNAL "${_project_name}_${_component_name} sources")    
-    
+    CACHE INTERNAL "${_project_name}_${_component_name} sources")
+
+set(${_project_name}_${_component_name}_VERSION ${${_project_name}_${_component_name}_PRIVATE_BINARY_DIR}/${_project_name}/version/version.hpp
+    CACHE INTERNAL "${_project_name}_${_component_name} versions.")
     
 # Disable compilation for private sources.
 set_source_files_properties(${${_project_name}_${_component_name}_PRIVATE_SOURCES} 
@@ -53,14 +59,32 @@ if("${${_project_name}_${_component_name}_component_type}" STREQUAL "library")
                 ${${_project_name}_${_component_name}_PRIVATE_HEADERS}
                 ${${_project_name}_${_component_name}_SOURCES}
                 ${${_project_name}_${_component_name}_PRIVATE_SOURCES}
-                ${${_project_name}_${_component_name}_RESOURCES})
+                ${${_project_name}_${_component_name}_VERSION})
+                
+
+    #
+    # Install rules
+    #
+    install(TARGETS ${_project_name}_${_component_name}
+      DESTINATION lib)
+    install(DIRECTORY ${${_project_name}_${_component_name}_INCLUDE_DIR}/
+      DESTINATION include)
+    install(DIRECTORY ${${_project_name}_${_component_name}_PRIVATE_BINARY_DIR}/
+      DESTINATION include)   
+                
 elseif("${${_project_name}_${_component_name}_component_type}" STREQUAL "executable")
     add_executable(${_project_name}_${_component_name}
                 ${${_project_name}_${_component_name}_HEADERS}
                 ${${_project_name}_${_component_name}_PRIVATE_HEADERS}
                 ${${_project_name}_${_component_name}_SOURCES}
                 ${${_project_name}_${_component_name}_PRIVATE_SOURCES}
-                ${${_project_name}_${_component_name}_RESOURCES})
+                ${${_project_name}_${_component_name}_VERSION})
+                
+    #
+    # Install rules
+    #
+    install(TARGETS ${_project_name}_${_component_name}
+      DESTINATION bin)
 else()
     message(ERROR_FATAL "Unknown component type for ${_project_name}")
 endif()
@@ -73,7 +97,8 @@ endif()
 # Add include directories to a target.
 target_include_directories(${_project_name}_${_component_name}
                         PUBLIC ${${_project_name}_${_component_name}_INCLUDE_DIR}
-                        PRIVATE ${${_project_name}_${_component_name}_PRIVATE_INCLUDE_DIR})
+                        PRIVATE ${${_project_name}_${_component_name}_PRIVATE_INCLUDE_DIR}
+                        PUBLIC ${${_project_name}_${_component_name}_PRIVATE_BINARY_DIR})
 
 #
 # Link a target to given libraries.

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <threadpoolex/version/version.hpp>
 #include <mutex>
 
 namespace threadpoolex {
