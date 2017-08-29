@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-set(_project_name threadpoolex)
-
-set(${_project_name}_major 0)
-set(${_project_name}_minor 1)
-set(${_project_name}_patch 0)
-
-set(_components 
-    googletest
-    core)
+include(CMakeLists.vars)
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
