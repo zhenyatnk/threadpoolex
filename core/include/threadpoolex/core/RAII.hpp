@@ -129,5 +129,15 @@ public:
     {}
 };
 
+//--------------------------------------------------------------
+class thread_raii
+    :public CRAII <std::thread>
+{
+public:
+    thread_raii(std::thread& aObj)
+        :CRAII(aObj, [](std::thread& aObj) {}, [](std::thread& aObj) {aObj.join();})
+    {}
+};
+
 }
 }

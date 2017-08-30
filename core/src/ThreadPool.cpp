@@ -1,5 +1,5 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/TLocking.hpp>
+#include <threadpoolex/core/TLockingEx.hpp>
 #include <threadpoolex/core/TNotifier.hpp>
 #include <threadpoolex/core/RAII.hpp>
 

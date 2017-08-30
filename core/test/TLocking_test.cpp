@@ -32,21 +32,29 @@ TEST_F(TLocking_test, lock_unlock)
 
 TEST_F(TLocking_test, lock_other_thread)
 {
-    TLocking<TestObject> aTest;
+    TLocking<std::vector<std::string>> aTest;
     {
         aTest.lock();
+        std::atomic_int lReadyThreads = 0;
 
-        auto lfuture = std::async(std::launch::async, [&aTest]()
+        auto lThread = std::thread([&]()
         {
+            ++lReadyThreads;
             aTest.lock();
-            aTest.a += 5;
+            aTest.push_back("in thread");
             aTest.unlock();
         });
-        aTest.a += 10;
-        ASSERT_EQ(10, aTest.a);
+
+        while (lReadyThreads != 1);
+
+        aTest.push_back("in function");
+
+        ASSERT_EQ(1, aTest.size());
+        ASSERT_STREQ("in function", aTest[0].c_str());
 
         aTest.unlock();
+        lThread.join();
     }
-    ASSERT_EQ(15, aTest.a);
-
+    ASSERT_EQ(2, aTest.size());
+    ASSERT_STREQ("in thread", aTest[1].c_str());
 }
