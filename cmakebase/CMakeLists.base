@@ -41,7 +41,10 @@ set(${_project_name}_${_component_name}_PRIVATE_SOURCES ${_private_sources}
 
 set(${_project_name}_${_component_name}_VERSION ${${_project_name}_${_component_name}_PRIVATE_BINARY_DIR}/${_project_name}/version/version.hpp
     CACHE INTERNAL "${_project_name}_${_component_name} versions.")
-    
+
+set(${_project_name}_${_component_name}_TARGET_LIBRARIES ${_target_libraries}
+    CACHE INTERNAL "${_project_name}_${_component_name} target libraries.")
+
 # Disable compilation for private sources.
 set_source_files_properties(${${_project_name}_${_component_name}_PRIVATE_SOURCES} 
                             PROPERTIES HEADER_FILE_ONLY TRUE)    
@@ -105,6 +108,7 @@ target_include_directories(${_project_name}_${_component_name}
 #
 target_link_libraries(
     ${_project_name}_${_component_name}
+    ${${_project_name}_${_component_name}_TARGET_LIBRARIES}
     )
 
 #
