@@ -156,13 +156,13 @@ TEST_F(CRAII_test, set_values_raii_atomic)
     ASSERT_EQ(20, lValue);
 }
 
-TEST_F(CRAII_test, thead_raii_pointer)
+TEST_F(CRAII_test, thread_join_raii_pointer)
 {
     using type = std::shared_ptr<std::thread>;
     bool lCompleted = false;
     type lValue = std::make_shared<type::element_type>([&lCompleted]() {lCompleted = true; });
     {
-        thread_raii lTest(lValue);
+        thread_join_raii lTest(lValue);
     }
     ASSERT_EQ(true, lCompleted);
 }

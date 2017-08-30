@@ -131,11 +131,11 @@ public:
 };
 
 //--------------------------------------------------------------
-class thread_raii
+class thread_join_raii
     :public CRAII <std::shared_ptr<std::thread>>
 {
 public:
-    thread_raii(std::shared_ptr<std::thread> aObj)
+    thread_join_raii(std::shared_ptr<std::thread> aObj)
         :CRAII(aObj, [](std::shared_ptr<std::thread>& aObj) {}, [](std::shared_ptr<std::thread>& aObj) {aObj->join();})
     {}
 };
