@@ -63,7 +63,7 @@ TEST_F(TLockingEx_test, exclock_lock_other_thread)
         {
             ++lReadyThreads;
             aTest.lock();
-            aTest.push_back("simple_lock");
+            aTest.push_back("lock");
             aTest.unlock();
         };
 

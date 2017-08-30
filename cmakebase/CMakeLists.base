@@ -132,6 +132,7 @@ if(${_project_name}_${_component_name}_TESTS)
         ${_project_name}_${_component_name}_test
         ${CMAKE_THREAD_LIBS_INIT}
         ${_project_name}_${_component_name}
+        gmock
         gtest
         gtest_main)
         

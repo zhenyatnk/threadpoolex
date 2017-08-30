@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <functional>
+#include <thread>
 #include <atomic>
 
 namespace threadpoolex {
@@ -131,11 +132,11 @@ public:
 
 //--------------------------------------------------------------
 class thread_raii
-    :public CRAII <std::thread>
+    :public CRAII <std::shared_ptr<std::thread>>
 {
 public:
-    thread_raii(std::thread& aObj)
-        :CRAII(aObj, [](std::thread& aObj) {}, [](std::thread& aObj) {aObj.join();})
+    thread_raii(std::shared_ptr<std::thread> aObj)
+        :CRAII(aObj, [](std::shared_ptr<std::thread>& aObj) {}, [](std::shared_ptr<std::thread>& aObj) {aObj->join();})
     {}
 };
 
