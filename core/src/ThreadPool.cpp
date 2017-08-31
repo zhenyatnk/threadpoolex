@@ -1,5 +1,5 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/TLockingEx.hpp>
+#include <threadpoolex/core/TLockingForce.hpp>
 #include <threadpoolex/core/TNotifier.hpp>
 #include <threadpoolex/core/RAII.hpp>
 
@@ -109,7 +109,6 @@ public:
     explicit CThreadPool(unsigned int aNumberThreads);
 
     virtual void AddTask(ITask::Ptr) override;
-    virtual void AddTasks(const std::vector<ITask::Ptr>&) override;
     virtual void AddTaskToTop(ITask::Ptr) override;
 
 private:
@@ -126,21 +125,14 @@ CThreadPool::CThreadPool(unsigned int aNumberThreads)
 
 void CThreadPool::AddTask(ITask::Ptr aTask)
 {
-    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_back(aTask);
     m_Tasks->notify_one();
 }
 
-void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
-{
-    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-    m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
-    m_Tasks->notify_all();
-}
-
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
 {
-    exclusive_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_front(aTask);
     m_Tasks->notify_one();
 }

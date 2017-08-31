@@ -23,16 +23,16 @@ public:
 class ITestExcLocker
 {
 public:
-    virtual void exclusive_lock() = 0;
-    virtual void exclusive_unlock() = 0;
+    virtual void force_lock() = 0;
+    virtual void force_unlock() = 0;
 };
 
 class MockExcLocker
     :public ITestExcLocker
 {
 public:
-    MOCK_METHOD0(exclusive_lock, void());
-    MOCK_METHOD0(exclusive_unlock, void());
+    MOCK_METHOD0(force_lock, void());
+    MOCK_METHOD0(force_unlock, void());
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -112,25 +112,25 @@ TEST_F(CRAII_test, lock_guard_ex_pointer)
     }
 }
 
-TEST_F(CRAII_test, exclusive_lock_guard_ex_reference)
+TEST_F(CRAII_test, force_lock_guard_ex_reference)
 {
     using type = MockExcLocker;
     type lValue;
-    EXPECT_CALL(lValue, exclusive_lock()).Times(1);
-    EXPECT_CALL(lValue, exclusive_unlock()).Times(1);
+    EXPECT_CALL(lValue, force_lock()).Times(1);
+    EXPECT_CALL(lValue, force_unlock()).Times(1);
     {
-        exclusive_lock_guard_ex<type> lTest(lValue);
+        force_lock_guard_ex<type> lTest(lValue);
     }
 }
 
-TEST_F(CRAII_test, exclusive_lock_guard_ex_pointer)
+TEST_F(CRAII_test, force_lock_guard_ex_pointer)
 {
     using type = std::shared_ptr<MockExcLocker>;
     type lValue = std::make_shared<type::element_type>();
-    EXPECT_CALL(*lValue, exclusive_lock()).Times(1);
-    EXPECT_CALL(*lValue, exclusive_unlock()).Times(1);
+    EXPECT_CALL(*lValue, force_lock()).Times(1);
+    EXPECT_CALL(*lValue, force_unlock()).Times(1);
     {
-        exclusive_lock_guard_ex<std::shared_ptr<ITestExcLocker>> lTest(lValue);
+        force_lock_guard_ex<std::shared_ptr<ITestExcLocker>> lTest(lValue);
     }
 }
 

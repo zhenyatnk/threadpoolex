@@ -8,7 +8,12 @@ namespace core {
 //--------------------------------------------------------------
 template<class Type>
 class TLocking
-    :public Type
+    :public Type, public TLocking<void>
+{};
+//--------------------------------------------------------------
+
+template<>
+class TLocking <void>
 {
 public:
     virtual ~TLocking() = default;
@@ -25,6 +30,6 @@ public:
 private:
     std::mutex m_Locker;
 };
-//--------------------------------------------------------------
+
 }
 }

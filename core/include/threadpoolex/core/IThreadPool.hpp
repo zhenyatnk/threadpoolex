@@ -18,7 +18,6 @@ public:
     virtual ~IThreadPool() = default;
 
     virtual void AddTask(ITask::Ptr) = 0;
-    virtual void AddTasks(const std::vector<ITask::Ptr>&) = 0;
     virtual void AddTaskToTop(ITask::Ptr) = 0;
 };
 //--------------------------------------------------------------

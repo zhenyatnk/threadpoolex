@@ -9,32 +9,37 @@ namespace core {
 //--------------------------------------------------------------
 template<class Type>
 class TLockingEx
-    :public Type
+    :public Type, public TLockingEx<void>
+{};
+
+//--------------------------------------------------------------
+template<>
+class TLockingEx<void>
 {
 public:
     virtual ~TLockingEx() = default;
 
-    virtual void exclusive_lock()
+    virtual void force_lock()
     {
-        m_ExclusiveLocker.lock();
+        m_ForceLocker.lock();
         m_Locker.lock();
     }
-    virtual void exclusive_unlock()
+    virtual void force_unlock()
     {
         m_Locker.unlock();
-        m_ExclusiveLocker.unlock();
+        m_ForceLocker.unlock();
     }
     virtual void lock()
     {
         m_Locker.lock();
-        if (!m_ExclusiveLocker.try_lock())
+        if (!m_ForceLocker.try_lock())
         {
             m_Locker.unlock();
-            std::lock_guard<std::mutex> lLock(m_ExclusiveLocker);
+            std::lock_guard<std::mutex> lLock(m_ForceLocker);
             m_Locker.lock();
         }
         else
-            m_ExclusiveLocker.unlock();
+            m_ForceLocker.unlock();
     }
     virtual void unlock()
     {
@@ -43,7 +48,7 @@ public:
 
 private:
     std::mutex m_Locker;
-    std::mutex m_ExclusiveLocker;
+    std::mutex m_ForceLocker;
 };
 //--------------------------------------------------------------
 }

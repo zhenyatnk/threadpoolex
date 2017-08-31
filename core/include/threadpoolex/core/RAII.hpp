@@ -91,22 +91,22 @@ public:
 };
 //--------------------------------------------------------------
 template<typename Type>
-class exclusive_lock_guard_ex
+class force_lock_guard_ex
     :public CRAII <Type>
 {
 public:
-    exclusive_lock_guard_ex(Type& aObj)
-        :CRAII(aObj, [](Type& aObj) {aObj.exclusive_lock(); }, [](Type& aObj) {aObj.exclusive_unlock(); })
+    force_lock_guard_ex(Type& aObj)
+        :CRAII(aObj, [](Type& aObj) {aObj.force_lock(); }, [](Type& aObj) {aObj.force_unlock(); })
     {}
 };
 
 template<typename Type>
-class exclusive_lock_guard_ex <std::shared_ptr<Type>>
+class force_lock_guard_ex <std::shared_ptr<Type>>
     :public CRAII <std::shared_ptr<Type>>
 {
 public:
-    exclusive_lock_guard_ex(std::shared_ptr<Type> aObj)
-        :CRAII(aObj, [](std::shared_ptr<Type> aObj) {aObj->exclusive_lock(); }, [](std::shared_ptr<Type> aObj) {aObj->exclusive_unlock(); })
+    force_lock_guard_ex(std::shared_ptr<Type> aObj)
+        :CRAII(aObj, [](std::shared_ptr<Type> aObj) {aObj->force_lock(); }, [](std::shared_ptr<Type> aObj) {aObj->force_unlock(); })
     {}
 };
 //--------------------------------------------------------------

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <threadpoolex/core/TLockingEx.hpp>
+#include <threadpoolex/core/TLockingForce.hpp>
 #include <future>
 
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -15,14 +15,51 @@ public:
 
 };
 //--------------------------------------------------------------------------------------------------------------------------------------
-TEST_F(TLockingEx_test, lock_unlock)
+TEST_F(TLockingEx_test, void_lock_unlock)
+{
+    TLockingEx<void> aTest;
+    aTest.lock();
+    aTest.unlock();
+}
+
+TEST_F(TLockingEx_test, void_lock_other_thread)
+{
+    TLockingEx<void> aTest;
+    std::vector<std::string> aValue;
+    {
+        aTest.lock();
+        std::atomic_int lReadyThreads = 0;
+
+        auto lThread = std::thread([&]()
+        {
+            ++lReadyThreads;
+            aTest.lock();
+            aValue.push_back("in thread");
+            aTest.unlock();
+        });
+
+        while (lReadyThreads != 1);
+
+        aValue.push_back("in function");
+
+        ASSERT_EQ(1, aValue.size());
+        ASSERT_STREQ("in function", aValue[0].c_str());
+
+        aTest.unlock();
+        lThread.join();
+    }
+    ASSERT_EQ(2, aValue.size());
+    ASSERT_STREQ("in thread", aValue[1].c_str());
+}
+
+TEST_F(TLockingEx_test, object_lock_unlock)
 {
     TLockingEx<std::vector<int>> aTest;
     aTest.lock();
     aTest.unlock();
 }
 
-TEST_F(TLockingEx_test, lock_other_thread)
+TEST_F(TLockingEx_test, object_lock_other_thread)
 {
     TLockingEx<std::vector<std::string>> aTest;
     {
@@ -51,7 +88,7 @@ TEST_F(TLockingEx_test, lock_other_thread)
     ASSERT_STREQ("in thread", aTest[1].c_str());
 }
 
-TEST_F(TLockingEx_test, exclock_lock_other_thread)
+TEST_F(TLockingEx_test, object_exclock_lock_other_thread)
 {
     unsigned numbersSimpleLock = 25;
     TLockingEx<std::vector<std::string>> aTest;
@@ -70,14 +107,14 @@ TEST_F(TLockingEx_test, exclock_lock_other_thread)
         auto lfunc_exlock_simple = [&]()
         {
             ++lReadyThreads;
-            aTest.exclusive_lock();
+            aTest.force_lock();
             aTest.push_back("exclusive_lock");
-            aTest.exclusive_unlock();
+            aTest.force_unlock();
         };
 
         std::vector<std::thread> lThreads;
         
-        for (auto lIndex = 0; lIndex < numbersSimpleLock; ++lIndex) 
+        for (unsigned lIndex = 0; lIndex < numbersSimpleLock; ++lIndex) 
             lThreads.push_back(std::thread(lfunc_lock_simple));
         lThreads.push_back(std::thread(lfunc_exlock_simple));
 
