@@ -100,7 +100,6 @@ TEST_F(TLockingShared_test, nonshared_shared)
     aTest.shared_lock();
     aTest.shared_unlock();
     aTest.shared_unlock();
-
 }
 
 TEST_F(TLockingShared_test, nonshared_shared_thread)
@@ -126,7 +125,7 @@ TEST_F(TLockingShared_test, nonshared_shared_thread)
 
 TEST_F(TLockingShared_test, nonshared_shared_many_thread)
 {
-    unsigned countThreads = 250;
+    unsigned countThreads = 20;
     TLockingShared<void> aTest;
     std::atomic_int lReadyThreads = 0;
 
