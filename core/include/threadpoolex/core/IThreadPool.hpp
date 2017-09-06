@@ -1,6 +1,7 @@
 #pragma once
 
 #include <threadpoolex/core/ITask.hpp>
+#include <threadpoolex/core/IStrategyExpansion.hpp>
 #include <threadpoolex/version/version.hpp>
 
 #include <memory>
@@ -8,6 +9,7 @@
 
 namespace threadpoolex {
 namespace core {
+
 //--------------------------------------------------------------
 class IThreadPool
 {
@@ -22,7 +24,7 @@ public:
     virtual void AddTaskToTop(ITask::Ptr) = 0;
 };
 //--------------------------------------------------------------
-IThreadPool::Ptr CreateThreadPool(unsigned int aNumberThreads);
-//--------------------------------------------------------------
+IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion);
+
 }
 }
