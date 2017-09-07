@@ -32,6 +32,9 @@ bool try_lock_for_ex(std::timed_mutex& aMutex, unsigned int aDuration)
         return aMutex.try_lock();
 #endif
 }
+
+#define CALL_UNEXCEPTION(func) try { func; } catch (...) {}
+
 }
 
 class CTimer
@@ -70,7 +73,7 @@ CTimer::~CTimer()
 {
     m_Stop.unlock();
     m_Timer.join();
-    this->GetObserver()->NotifyClose();
+    CALL_UNEXCEPTION(this->GetObserver()->NotifyClose());
 }
 
 void CTimer::Run()
@@ -82,13 +85,7 @@ void CTimer::Run()
         while ((m_InfinityRepeat || lRepeated < m_CountRepeat) &&
                 !try_lock_for_ex(m_Stop, m_IntervalMs))
         {
-            try
-            {
-                aObserver->NotifyCheck();
-            }
-            catch(...)
-            {}
-
+            CALL_UNEXCEPTION(aObserver->NotifyCheck());
             lRepeated++;
         }
 
