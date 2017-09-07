@@ -11,9 +11,8 @@ class CExpansionToMax_test
 public:
     void SetUp()
     {}
-
 };
-//--------------------------------------------------------------------------------------------------------------------------------------
+
 TEST_F(CExpansionToMax_test, max_empty)
 {
     IStrategyExpansion::Ptr aTest = CreateExpansionToMax(0);

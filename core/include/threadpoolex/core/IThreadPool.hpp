@@ -22,6 +22,8 @@ public:
     virtual void AddTask(ITask::Ptr) = 0;
     virtual void AddTasks(const std::vector<ITask::Ptr>&) = 0;
     virtual void AddTaskToTop(ITask::Ptr) = 0;
+
+    virtual void TryExpansion() = 0;
 };
 //--------------------------------------------------------------
 IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion);

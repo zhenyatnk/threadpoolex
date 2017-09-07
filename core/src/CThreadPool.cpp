@@ -112,6 +112,11 @@ public:
     virtual void AddTasks(const std::vector<ITask::Ptr>&) override;
     virtual void AddTaskToTop(ITask::Ptr) override;
 
+    virtual void TryExpansion() override;
+
+protected:
+    void TryExpansionNonLock();
+
 private:
     std::vector<IThread::Ptr> m_Threads;
     std::shared_ptr<TDequeTasks> m_Tasks;
@@ -128,10 +133,7 @@ CThreadPool::CThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Pt
 void CThreadPool::AddTask(ITask::Ptr aTask)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-
-    if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
-        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
-
+    TryExpansionNonLock();
     m_Tasks->push_back(aTask);
     m_Tasks->notify_one();
 }
@@ -139,10 +141,7 @@ void CThreadPool::AddTask(ITask::Ptr aTask)
 void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-
-    if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
-        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
-    
+    TryExpansionNonLock();
     m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
     m_Tasks->notify_all();
 }
@@ -150,12 +149,21 @@ void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-    
-    if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
-        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
-
+    TryExpansionNonLock();
     m_Tasks->push_front(aTask);
     m_Tasks->notify_one();
+}
+
+void CThreadPool::TryExpansion()
+{
+    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    TryExpansionNonLock();
+}
+
+void CThreadPool::TryExpansionNonLock()
+{
+    if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
+        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
 }
 
 IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion)
