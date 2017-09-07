@@ -9,8 +9,12 @@
 
 namespace threadpoolex {
 namespace core {
+namespace {
+#define SAFE_CALL_LOG(func, catch_error) {try { func; } catch (std::exception &aError) { catch_error(aError.what(), 0);}}
+}
 
 class IHandlerTimer
+    :public IHandlerError
 {
 public:
     using Ptr = std::shared_ptr<IHandlerTimer>;
@@ -55,6 +59,7 @@ public:
 
 class CObservableTimer
     :public virtual IObservableTimer, 
+     public INotifierError,
      public INotifierTimerClose,
      public INotifierTimerCheck
 {
@@ -75,15 +80,20 @@ public:
     virtual void NotifyClose() override
     {
         for (auto lHandler : m_ListHandler)
-            lHandler->OnClose();
+            SAFE_CALL_LOG(lHandler->OnClose(), this->NotifyError);
     }
     
     virtual void NotifyCheck() override
     {
         for (auto lHandler : m_ListHandler)
-            lHandler->OnCheck();
+            SAFE_CALL_LOG(lHandler->OnCheck(), this->NotifyError);
     }
 
+    virtual void NotifyError(const std::string &aMessage, const int& aErrorCode) override
+    {
+        for (auto lHandler : m_ListHandler)
+            lHandler->OnError(aMessage, aErrorCode);
+    }
 
 private:
     std::list<IHandlerTimer::Ptr> m_ListHandler;

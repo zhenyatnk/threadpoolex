@@ -6,6 +6,28 @@
 namespace threadpoolex {
 namespace core {
 
+class IHandlerError
+{
+public:
+    using Ptr = std::shared_ptr<IHandlerError>;
+
+public:
+    virtual ~IHandlerError() = default;
+
+    virtual void OnError(const std::string &aMessage, const int& aErrorCode) = 0;
+};
+
+class INotifierError
+{
+public:
+    using Ptr = std::shared_ptr<INotifierError>;
+
+public:
+    virtual ~INotifierError() = default;
+
+    virtual void NotifyError(const std::string &aMessage, const int& aErrorCode) = 0;
+};
+
 template <class ObservableIntf, class ObservableImpl, class HandlerIntf>
 class CBaseObservable
     :public virtual ObservableIntf
