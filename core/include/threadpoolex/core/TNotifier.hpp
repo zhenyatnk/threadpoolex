@@ -40,8 +40,15 @@ public:
 
     virtual void wait()
     {
-        CRAII<std::atomic_int> lwait(m_CountWait, [](std::atomic_int& aValue) { ++aValue; }, [](std::atomic_int& aValue) { --aValue; });
+        wait([]() {});
+    }
+
+    template <typename Type>
+    void wait(Type aFunction)
+    {
         std::unique_lock<std::mutex> lk(m_Mutex);
+        CRAII<std::atomic_int> lwait(m_CountWait, [](std::atomic_int& aValue) { ++aValue; }, [](std::atomic_int& aValue) { --aValue; });
+        aFunction();
         m_Condition.wait(lk, [this]() {return m_CountNotify-- > 0; });
     }
 
@@ -51,6 +58,7 @@ private:
     int m_CountNotify;
     std::atomic_int m_CountWait;
 };
+
 //--------------------------------------------------------------
 }
 }

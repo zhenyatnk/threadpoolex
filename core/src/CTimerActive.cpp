@@ -1,4 +1,4 @@
-#include <threadpoolex/core/ITimer.hpp>
+#include <threadpoolex/core/ITimerActive.hpp>
 
 #include <future>
 
@@ -35,14 +35,14 @@ bool try_lock_for_ex(std::timed_mutex& aMutex, unsigned int aDuration)
 
 }
 
-class CTimer
-    :public ITimer, public CBaseObservableTimer
+class CTimerActive
+    :public ITimerActive, public CBaseObservableTimer
 {
 public:
-    explicit CTimer(unsigned int aIntervalMs);
-    CTimer(unsigned int aIntervalMs, unsigned int aCountRepeat);
+    explicit CTimerActive(unsigned int aIntervalMs);
+    CTimerActive(unsigned int aIntervalMs, unsigned int aCountRepeat);
 
-    virtual ~CTimer();
+    virtual ~CTimerActive();
 
 protected:
     void Run();
@@ -55,28 +55,28 @@ private:
     bool m_InfinityRepeat;
 };
 
-CTimer::CTimer(unsigned int aIntervalMs)
+CTimerActive::CTimerActive(unsigned int aIntervalMs)
     :m_IntervalMs(aIntervalMs), m_InfinityRepeat(true), m_CountRepeat(0)
 {
     Run();
 }
 
-CTimer::CTimer(unsigned int aIntervalMs, unsigned int aCountRepeat)
+CTimerActive::CTimerActive(unsigned int aIntervalMs, unsigned int aCountRepeat)
     :m_IntervalMs(aIntervalMs), m_InfinityRepeat(false), m_CountRepeat(aCountRepeat)
 {
     Run();
 }
 
-CTimer::~CTimer()
+CTimerActive::~CTimerActive()
 {
     m_Stop.unlock();
     m_Timer.join();
     this->GetObserver()->NotifyClose();
 }
 
-void CTimer::Run()
+void CTimerActive::Run()
 {
-    m_Stop.lock();
+    m_Stop.try_lock();
     m_Timer = std::thread([this](CObservableTimer::Ptr aObserver)
     {
         unsigned int lRepeated = 0;
@@ -91,14 +91,14 @@ void CTimer::Run()
 }
 
 //---------------------------------------------------------------------------
-ITimer::Ptr CreateTimer(unsigned int aIntervalMs)
+ITimerActive::Ptr CreateTimerActive(unsigned int aIntervalMs)
 {
-    return std::make_shared<CTimer>(aIntervalMs);
+    return std::make_shared<CTimerActive>(aIntervalMs);
 }
 
-ITimer::Ptr CreateTimer(unsigned int aIntervalMs, unsigned int aCountRepeat)
+ITimerActive::Ptr CreateTimerActive(unsigned int aIntervalMs, unsigned int aCountRepeat)
 {
-    return std::make_shared<CTimer>(aIntervalMs, aCountRepeat);
+    return std::make_shared<CTimerActive>(aIntervalMs, aCountRepeat);
 }
 
 }

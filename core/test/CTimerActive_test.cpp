@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <threadpoolex/core/ITimer.hpp>
+#include <threadpoolex/core/ITimerActive.hpp>
 
 #include <atomic>
 #include <memory>
@@ -90,7 +90,7 @@ private:
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-class CTimer_test
+class CTimerActive_test
     :public ::testing::Test
 {
 public:
@@ -99,48 +99,48 @@ public:
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-TEST_F(CTimer_test, infinity_OnClose)
+TEST_F(CTimerActive_test, infinity_OnClose)
 {
     auto lHandler = std::make_shared<IHandlerTimer_mock>();
     EXPECT_CALL(*lHandler, OnClose()).Times(1);
     {
-        ITimer::Ptr lTimer = CreateTimer(500);
+        ITimerActive::Ptr lTimer = CreateTimerActive(500);
         lTimer->AddHandler(lHandler);
     }
 }
 
-TEST_F(CTimer_test, infinity_OnCheck)
+TEST_F(CTimerActive_test, infinity_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready>(lCheckReady);
 
-    ITimer::Ptr lTimer = CreateTimer(1);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1);
     lTimer->AddHandler(lHandler);
     while (lCheckReady < 5);
 }
 
-TEST_F(CTimer_test, infinity_exception_OnClose)
+TEST_F(CTimerActive_test, infinity_exception_OnClose)
 {
     std::atomic_int lCloseReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_close_exception>(lCloseReady);
     {
-        ITimer::Ptr lTimer = CreateTimer(1);
+        ITimerActive::Ptr lTimer = CreateTimerActive(1);
         lTimer->AddHandler(lHandler);
     }
     ASSERT_EQ(1, lCloseReady);
 }
 
-TEST_F(CTimer_test, infinity_exception_OnCheck)
+TEST_F(CTimerActive_test, infinity_exception_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_check_exception>(lCheckReady);
 
-    ITimer::Ptr lTimer = CreateTimer(1);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1);
     lTimer->AddHandler(lHandler);
     while (lCheckReady < 5);
 }
 
-TEST_F(CTimer_test, infinity_exception_second_true_OnCheck)
+TEST_F(CTimerActive_test, infinity_exception_second_true_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_check_exception>(lCheckReady);
@@ -149,64 +149,64 @@ TEST_F(CTimer_test, infinity_exception_second_true_OnCheck)
     EXPECT_CALL(*lHandlerMock, OnCheck()).Times(AtMost(5));
     EXPECT_CALL(*lHandlerMock, OnClose()).Times(1);
 
-    ITimer::Ptr lTimer = CreateTimer(1);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1);
     lTimer->AddHandler(lHandler);
     lTimer->AddHandler(lHandlerMock);
     while (lCheckReady < 1);
 }
 
-TEST_F(CTimer_test, noninfinity_zero_OnClose)
+TEST_F(CTimerActive_test, noninfinity_zero_OnClose)
 {
     auto lHandler = std::make_shared<IHandlerTimer_mock>();
     EXPECT_CALL(*lHandler, OnClose()).Times(1);
     {
-        ITimer::Ptr lTimer = CreateTimer(500, 0);
+        ITimerActive::Ptr lTimer = CreateTimerActive(500, 0);
         lTimer->AddHandler(lHandler);
     }
 }
 
-TEST_F(CTimer_test, noninfinity_nonzero_OnClose)
+TEST_F(CTimerActive_test, noninfinity_nonzero_OnClose)
 {
     auto lHandler = std::make_shared<IHandlerTimer_mock>();
     EXPECT_CALL(*lHandler, OnClose()).Times(1);
     {
-        ITimer::Ptr lTimer = CreateTimer(500, 2);
+        ITimerActive::Ptr lTimer = CreateTimerActive(500, 2);
         lTimer->AddHandler(lHandler);
     }
 }
 
-TEST_F(CTimer_test, noninfinity_OnCheck)
+TEST_F(CTimerActive_test, noninfinity_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready>(lCheckReady);
 
-    ITimer::Ptr lTimer = CreateTimer(1, 4);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1, 4);
     lTimer->AddHandler(lHandler);
     while (lCheckReady < 4);
 }
 
-TEST_F(CTimer_test, noninfinity_exception_OnClose)
+TEST_F(CTimerActive_test, noninfinity_exception_OnClose)
 {
     std::atomic_int lCloseReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_close_exception>(lCloseReady);
     {
-        ITimer::Ptr lTimer = CreateTimer(1, 4);
+        ITimerActive::Ptr lTimer = CreateTimerActive(1, 4);
         lTimer->AddHandler(lHandler);
     }
     ASSERT_EQ(1, lCloseReady);
 }
 
-TEST_F(CTimer_test, noninfinity_exception_OnCheck)
+TEST_F(CTimerActive_test, noninfinity_exception_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_check_exception>(lCheckReady);
 
-    ITimer::Ptr lTimer = CreateTimer(1, 4);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1, 4);
     lTimer->AddHandler(lHandler);
     while (lCheckReady < 4);
 }
 
-TEST_F(CTimer_test, noninfinity_exception_second_true_OnCheck)
+TEST_F(CTimerActive_test, noninfinity_exception_second_true_OnCheck)
 {
     std::atomic_int lCheckReady = 0;
     auto lHandler = std::make_shared<IHandlerTimer_ready_check_exception>(lCheckReady);
@@ -215,7 +215,7 @@ TEST_F(CTimer_test, noninfinity_exception_second_true_OnCheck)
     EXPECT_CALL(*lHandlerMock, OnCheck()).Times(4);
     EXPECT_CALL(*lHandlerMock, OnClose()).Times(1);
 
-    ITimer::Ptr lTimer = CreateTimer(1, 4);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1, 4);
     lTimer->AddHandler(lHandler);
     lTimer->AddHandler(lHandlerMock);
     while (lCheckReady < 4);

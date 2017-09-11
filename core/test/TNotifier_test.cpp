@@ -59,8 +59,7 @@ TEST_F(TNotifier_test, void_notify_all)
 
     auto lfunc = [&]()
     {
-        ++lReadyThreads;
-        aTest.wait();
+       aTest.wait([&]() { ++lReadyThreads; });
     };
 
     std::vector<std::thread> lThreads;

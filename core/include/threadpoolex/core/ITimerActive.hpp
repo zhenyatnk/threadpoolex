@@ -1,6 +1,6 @@
 #pragma once
 
-#include <threadpoolex/core/ITimerHandler.hpp>
+#include <threadpoolex/core/ITimerActiveHandler.hpp>
 #include <threadpoolex/version/version.hpp>
 
 #include <memory>
@@ -9,18 +9,18 @@ namespace threadpoolex {
 namespace core {
 
 //--------------------------------------------------------------
-class ITimer
+class ITimerActive
    :public virtual IObservableTimer
 {
 public:
-    using Ptr = std::shared_ptr<ITimer>;
+    using Ptr = std::shared_ptr<ITimerActive>;
 
 public:
-    virtual ~ITimer() = default;
+    virtual ~ITimerActive() = default;
 };
 //--------------------------------------------------------------
-ITimer::Ptr CreateTimer(unsigned int aInterval);
-ITimer::Ptr CreateTimer(unsigned int aInterval, unsigned int aCountRepeat);
+ITimerActive::Ptr CreateTimerActive(unsigned int aInterval);
+ITimerActive::Ptr CreateTimerActive(unsigned int aInterval, unsigned int aCountRepeat);
 
 }
 }
