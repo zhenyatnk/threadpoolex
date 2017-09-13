@@ -1,6 +1,6 @@
 #pragma once
 
-#include <threadpoolex/core/ITimerActiveHandler.hpp>
+#include <threadpoolex/core/ITimerActiveObserver.hpp>
 #include <threadpoolex/version/version.hpp>
 
 #include <memory>

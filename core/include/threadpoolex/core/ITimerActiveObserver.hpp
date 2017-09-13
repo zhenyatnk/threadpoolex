@@ -1,6 +1,6 @@
 #pragma once
 
-#include <threadpoolex/core/IHandler.hpp>
+#include <threadpoolex/core/IObserver.hpp>
 #include <threadpoolex/core/export.hpp>
 
 #include <list>
@@ -13,17 +13,17 @@ namespace {
 #define SAFE_CALL_LOG(func, catch_error) {try { func; } catch (std::exception &aError) { catch_error(aError.what(), 0);}}
 }
 
-class IHandlerTimer
-    :public IHandlerError
+class IObserverTimer
+    :public IObserverError
 {
 public:
-    using Ptr = std::shared_ptr<IHandlerTimer>;
+    using Ptr = std::shared_ptr<IObserverTimer>;
 
 public:
-    virtual ~IHandlerTimer() = default;
+    virtual ~IObserverTimer() = default;
 
-    virtual void OnCheck() = 0;
-    virtual void OnClose() = 0;
+    virtual void HandleCheck() = 0;
+    virtual void HandleClose() = 0;
 };
 
 class INotifierTimerClose
@@ -53,8 +53,8 @@ class IObservableTimer
 public:
     virtual ~IObservableTimer() = default;
 
-    virtual void AddHandler(IHandlerTimer::Ptr aHandler) = 0;
-    virtual void RemoveHandler(IHandlerTimer::Ptr aHandler) = 0;
+    virtual void AddObserver(IObserverTimer::Ptr aHandler) = 0;
+    virtual void RemoveObserver(IObserverTimer::Ptr aHandler) = 0;
 };
 
 class CObservableTimer
@@ -67,49 +67,49 @@ public:
     using Ptr = std::shared_ptr<CObservableTimer>;
 
 public:
-    virtual void AddHandler(IHandlerTimer::Ptr aHandler) override
+    virtual void AddObserver(IObserverTimer::Ptr aHandler) override
     {
-        m_ListHandler.push_back(aHandler);
+        m_ListObservers.push_back(aHandler);
     }
 
-    virtual void RemoveHandler(IHandlerTimer::Ptr aHandler) override
+    virtual void RemoveObserver(IObserverTimer::Ptr aHandler) override
     {
-        m_ListHandler.remove(aHandler);
+        m_ListObservers.remove(aHandler);
     }
 
     virtual void NotifyClose() override
     {
-        for (auto lHandler : m_ListHandler)
-            SAFE_CALL_LOG(lHandler->OnClose(), this->NotifyError);
+        for (auto lObserver : m_ListObservers)
+            SAFE_CALL_LOG(lObserver->HandleClose(), this->NotifyError);
     }
     
     virtual void NotifyCheck() override
     {
-        for (auto lHandler : m_ListHandler)
-            SAFE_CALL_LOG(lHandler->OnCheck(), this->NotifyError);
+        for (auto lObserver : m_ListObservers)
+            SAFE_CALL_LOG(lObserver->HandleCheck(), this->NotifyError);
     }
 
     virtual void NotifyError(const std::string &aMessage, const int& aErrorCode) override
     {
-        for (auto lHandler : m_ListHandler)
-            lHandler->OnError(aMessage, aErrorCode);
+        for (auto lObserver : m_ListObservers)
+            lObserver->HandleError(aMessage, aErrorCode);
     }
 
 private:
-    std::list<IHandlerTimer::Ptr> m_ListHandler;
+    std::list<IObserverTimer::Ptr> m_ListObservers;
 };
 
-typedef CBaseObservable<IObservableTimer, CObservableTimer, IHandlerTimer> CBaseObservableTimer;
+typedef CBaseObservable<IObservableTimer, CObservableTimer, IObserverTimer> CBaseObservableTimer;
 
 //------------------------------------------------------------------------------------------------------------------
-class THREADPOOLEX_CORE_EXPORT EmptyHandlerTimer
-    :public IHandlerTimer
+class THREADPOOLEX_CORE_EXPORT EmptyObserverTimer
+    :public IObserverTimer
 {
 public:
-    virtual void OnCheck() override
+    virtual void HandleCheck() override
     {}
     
-    virtual void OnClose() override
+    virtual void HandleClose() override
     {}
 };
 
