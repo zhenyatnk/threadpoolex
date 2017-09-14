@@ -54,7 +54,7 @@ protected:
     void Stop();
 
 private:
-    std::thread m_Timer;
+    thread_join_raii m_Timer;
     std::timed_mutex m_Stop;
     std::atomic_bool m_Check;
     unsigned int m_IntervalMs;
@@ -86,17 +86,17 @@ void CTimerPassive::Reset()
 void CTimerPassive::Run()
 {
     m_Stop.try_lock();
-    m_Timer = std::thread([this]()
+    m_Timer = thread_join_raii(std::thread([this]()
     {
         if (!try_lock_for_ex(m_Stop, m_IntervalMs))
             m_Check = true;
-    });
+    }));
 }
 
 void CTimerPassive::Stop()
 {
     m_Stop.unlock();
-    m_Timer.join();
+    m_Timer = thread_join_raii();
 }
 
 //---------------------------------------------------------------------------

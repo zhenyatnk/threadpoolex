@@ -1,4 +1,5 @@
 #include <threadpoolex/core/ITimerActive.hpp>
+#include <threadpoolex/core/RAII.hpp>
 
 #include <future>
 
@@ -48,7 +49,7 @@ protected:
     void Run();
 
 private:
-    std::thread m_Timer;
+    thread_join_raii m_Timer;
     std::timed_mutex m_Stop;
     unsigned int m_IntervalMs;
     unsigned int m_CountRepeat;
@@ -70,14 +71,13 @@ CTimerActive::CTimerActive(unsigned int aIntervalMs, unsigned int aCountRepeat)
 CTimerActive::~CTimerActive()
 {
     m_Stop.unlock();
-    m_Timer.join();
     this->GetObserver()->NotifyClose();
 }
 
 void CTimerActive::Run()
 {
     m_Stop.try_lock();
-    m_Timer = std::thread([this](CObservableTimer::Ptr aObserver)
+    m_Timer = thread_join_raii(std::thread([this](CObservableTimer::Ptr aObserver)
     {
         unsigned int lRepeated = 0;
         while ((m_InfinityRepeat || lRepeated < m_CountRepeat) &&
@@ -87,7 +87,7 @@ void CTimerActive::Run()
             ++lRepeated;
         }
 
-    }, this->GetObserver());
+    }, this->GetObserver()));
 }
 
 //---------------------------------------------------------------------------
