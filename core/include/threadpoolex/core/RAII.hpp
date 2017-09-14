@@ -70,6 +70,33 @@ private:
 };
 
 //--------------------------------------------------------------
+template <typename Type>
+class CRAII <Type&&>
+    :public IRAII
+{
+public:
+    using TypeFunction = std::function<void(std::shared_ptr<Type>)>;
+
+public:
+    CRAII(Type&& aObj, TypeFunction aCtor, TypeFunction aDtor)
+        :m_Obj(aObj), m_Ctor(aCtor), m_Dtor(aDtor)
+    {
+        m_Ctor(m_Obj);
+    }
+
+    virtual ~CRAII()
+    {
+        m_Dtor(m_Obj);
+    }
+
+private:
+    std::shared_ptr<Type> m_Obj;
+    TypeFunction m_Ctor;
+    TypeFunction m_Dtor;
+};
+
+
+//--------------------------------------------------------------
 template<typename Type>
 class lock_guard_ex
     :public CRAII <Type>
@@ -132,13 +159,45 @@ public:
 
 //--------------------------------------------------------------
 class thread_join_raii
-    :public CRAII <std::shared_ptr<std::thread>>
+    :public IRAII
 {
+private:
+    class move_raii
+        :public IRAII
+    {
+    public:
+        explicit move_raii(std::thread&& aObj)
+            :m_Obj(std::move(aObj))
+        {}
+
+        virtual ~move_raii()
+        {
+            if (m_Obj.joinable())
+                m_Obj.join();
+        }
+
+    private:
+        std::thread m_Obj;
+    };
+
 public:
-    thread_join_raii(std::shared_ptr<std::thread> aObj)
-        :CRAII(aObj, [](std::shared_ptr<std::thread>& aObj) {}, [](std::shared_ptr<std::thread>& aObj) {aObj->join();})
+    explicit thread_join_raii(std::shared_ptr<std::thread> aObj)
+        :m_RAII(std::make_shared<CRAII<std::shared_ptr<std::thread>>>(aObj, [](std::shared_ptr<std::thread>& aObj) {}, [](std::shared_ptr<std::thread>& aObj) { if (aObj->joinable()) aObj->join(); }))
     {}
+
+    explicit thread_join_raii(std::thread& aObj)
+        :m_RAII(std::make_shared<CRAII<std::thread>>(aObj, [](std::thread& aObj) {}, [](std::thread& aObj) { if (aObj.joinable()) aObj.join(); }))
+    {}
+
+    explicit thread_join_raii(std::thread&& aObj)
+        :m_RAII(std::make_shared<move_raii>(std::move(aObj)))
+    {}
+
+private:
+    IRAII::Ptr m_RAII;
 };
+
+
 
 }
 }

@@ -166,3 +166,41 @@ TEST_F(CRAII_test, thread_join_raii_pointer)
     }
     ASSERT_EQ(true, lCompleted);
 }
+
+TEST_F(CRAII_test, thread_join_raii_pointer_notjoinable)
+{
+    using type = std::shared_ptr<std::thread>;
+    type lValue = std::make_shared<type::element_type>();
+    thread_join_raii lTest(lValue);
+}
+
+TEST_F(CRAII_test, thread_join_raii_lvalue)
+{
+    using type = std::thread;
+    bool lCompleted = false;
+    type lValue ([&lCompleted]() {lCompleted = true; });
+    {
+        thread_join_raii lTest(lValue);
+    }
+    ASSERT_EQ(true, lCompleted);
+}
+
+TEST_F(CRAII_test, thread_join_raii_lvalue_notjoinable)
+{
+    std::thread lValue;
+    thread_join_raii lTest(lValue);
+}
+
+TEST_F(CRAII_test, thread_join_raii_rvalue)
+{
+    bool lCompleted = false;
+    {
+        thread_join_raii lTest(std::thread([&lCompleted]() {lCompleted = true; }));
+    }
+    ASSERT_EQ(true, lCompleted);
+}
+
+TEST_F(CRAII_test, thread_join_raii_rvalue_notjoinable)
+{
+    thread_join_raii lTest(std::thread());
+}
