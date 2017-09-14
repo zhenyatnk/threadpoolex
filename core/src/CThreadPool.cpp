@@ -29,41 +29,39 @@ public:
 
 }
 //---------------------------------------------------------------
-class CThread
+class CWorker
     :public IThread
 {
 public:
-    explicit CThread(std::shared_ptr<TDequeTasks> aTasks);
-    virtual ~CThread();
+    explicit CWorker(std::shared_ptr<TDequeTasks> aTasks);
+    virtual ~CWorker();
 
     virtual void Run() override;
     virtual bool IsWorking() override;
 
 private:
     std::shared_ptr<TDequeTasks> m_Tasks;
-    std::future<void> m_Thread;
+    thread_join_raii m_ThreadRaii;
     std::atomic_bool m_Stop;
     std::atomic_bool m_Working;
 };
 
-CThread::CThread(std::shared_ptr<TDequeTasks> aTasks)
+CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
     :m_Tasks(aTasks), m_Stop(false), m_Working(false)
 {
     Run();
 }
 
-CThread::~CThread()
+CWorker::~CWorker()
 {
     m_Stop = true;
     m_Tasks->notify_one();
-    if (m_Thread.valid())
-        m_Thread.wait();
 }
 
-void CThread::Run()
+void CWorker::Run()
 {
-    m_Thread = std::async(std::launch::async,
-                          [this](std::shared_ptr<TDequeTasks> aTasks)
+    m_ThreadRaii = thread_join_raii(std::thread(
+    [this](std::shared_ptr<TDequeTasks> aTasks)
     {
         while (true)
         {
@@ -93,10 +91,10 @@ void CThread::Run()
                     lTask->Execite();
             }
         }
-    }, m_Tasks);
+    }, m_Tasks));
 }
 
-bool CThread::IsWorking()
+bool CWorker::IsWorking()
 {
     return m_Working;
 }
@@ -127,7 +125,7 @@ CThreadPool::CThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Pt
     :m_Tasks(std::make_shared<TDequeTasks>()), m_Expansion(aExpansion)
 {
     for (unsigned int i = 0; i < aCountStartThreads; i++)
-        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
+        m_Threads.push_back(std::make_shared<CWorker>(m_Tasks));
 }
 
 void CThreadPool::AddTask(ITask::Ptr aTask)
@@ -163,7 +161,7 @@ void CThreadPool::TryExpansion()
 void CThreadPool::TryExpansionNonLock()
 {
     if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
-        m_Threads.push_back(std::make_shared<CThread>(m_Tasks));
+        m_Threads.push_back(std::make_shared<CWorker>(m_Tasks));
 }
 
 IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion)

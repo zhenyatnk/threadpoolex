@@ -156,6 +156,11 @@ TEST_F(CRAII_test, set_values_raii_atomic)
     ASSERT_EQ(20, lValue);
 }
 
+TEST_F(CRAII_test, thread_join_raii_empty)
+{
+    thread_join_raii lTest;
+}
+
 TEST_F(CRAII_test, thread_join_raii_pointer)
 {
     using type = std::shared_ptr<std::thread>;

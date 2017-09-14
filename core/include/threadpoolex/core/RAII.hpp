@@ -181,6 +181,10 @@ private:
     };
 
 public:
+    thread_join_raii()
+        :m_RAII(nullptr)
+    {}
+
     explicit thread_join_raii(std::shared_ptr<std::thread> aObj)
         :m_RAII(std::make_shared<CRAII<std::shared_ptr<std::thread>>>(aObj, [](std::shared_ptr<std::thread>& aObj) {}, [](std::shared_ptr<std::thread>& aObj) { if (aObj->joinable()) aObj->join(); }))
     {}
