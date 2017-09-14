@@ -22,9 +22,6 @@ public:
 
 public:
     virtual ~IThread() = default;
-
-    virtual void Run() = 0;
-    virtual bool IsWorking() = 0;
 };
 
 }
@@ -36,18 +33,17 @@ public:
     explicit CWorker(std::shared_ptr<TDequeTasks> aTasks);
     virtual ~CWorker();
 
-    virtual void Run() override;
-    virtual bool IsWorking() override;
+protected:
+    void Run();
 
 private:
     std::shared_ptr<TDequeTasks> m_Tasks;
     thread_join_raii m_ThreadRaii;
     std::atomic_bool m_Stop;
-    std::atomic_bool m_Working;
 };
 
 CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
-    :m_Tasks(aTasks), m_Stop(false), m_Working(false)
+    :m_Tasks(aTasks), m_Stop(false)
 {
     Run();
 }
@@ -75,7 +71,6 @@ void CWorker::Run()
                 break;
 
             {
-                set_values_raii<std::atomic_bool> lWorkingFlag(m_Working, true, false);
                 ITask::Ptr lTask;
                 {
                     lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(aTasks);
@@ -92,11 +87,6 @@ void CWorker::Run()
             }
         }
     }, m_Tasks));
-}
-
-bool CWorker::IsWorking()
-{
-    return m_Working;
 }
 //------------------------------------------------------------------
 
