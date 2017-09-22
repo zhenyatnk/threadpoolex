@@ -90,6 +90,21 @@ TEST_F(CRAII_test, base_pointer)
     ASSERT_STREQ("dtor", (*lValue)[1].c_str());
 }
 
+TEST_F(CRAII_test, base_void)
+{
+    using type = std::vector<std::string>;
+    type lValue;
+    {
+        CRAII<void> lTest(
+            [&lValue]() {lValue.push_back("ctor"); },
+            [&lValue]() {lValue.push_back("dtor"); });
+        ASSERT_EQ(1, lValue.size());
+        ASSERT_STREQ("ctor", lValue[0].c_str());
+    }
+    ASSERT_EQ(2, lValue.size());
+    ASSERT_STREQ("dtor", lValue[1].c_str());
+}
+
 TEST_F(CRAII_test, lock_guard_ex_reference)
 {
     using type = MockLocker;

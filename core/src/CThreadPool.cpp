@@ -83,7 +83,7 @@ void CWorker::Run()
                 }
 
                 if (lTask)
-                    lTask->Execite();
+                    lTask->Execute();
             }
         }
     }, m_Tasks));

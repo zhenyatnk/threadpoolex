@@ -69,6 +69,31 @@ private:
     TypeFunction m_Dtor;
 };
 
+template <>
+class CRAII <void>
+    :public IRAII
+{
+public:
+    using TypeFunction = std::function<void()>;
+
+public:
+    CRAII(TypeFunction aCtor, TypeFunction aDtor)
+        :m_Ctor(aCtor), m_Dtor(aDtor)
+    {
+        m_Ctor();
+    }
+
+    virtual ~CRAII()
+    {
+        m_Dtor();
+    }
+
+private:
+    TypeFunction m_Ctor;
+    TypeFunction m_Dtor;
+};
+
+
 //--------------------------------------------------------------
 template <typename Type>
 class CRAII <Type&&>

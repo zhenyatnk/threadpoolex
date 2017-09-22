@@ -13,7 +13,7 @@ public:
 public:
     virtual ~ITask() = default;
 
-    virtual void Execite() = 0;
+    virtual void Execute() = 0;
 };
 
 }
