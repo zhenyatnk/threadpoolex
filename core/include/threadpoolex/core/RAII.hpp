@@ -93,34 +93,6 @@ private:
     TypeFunction m_Dtor;
 };
 
-
-//--------------------------------------------------------------
-template <typename Type>
-class CRAII <Type&&>
-    :public IRAII
-{
-public:
-    using TypeFunction = std::function<void(std::shared_ptr<Type>)>;
-
-public:
-    CRAII(Type&& aObj, TypeFunction aCtor, TypeFunction aDtor)
-        :m_Obj(aObj), m_Ctor(aCtor), m_Dtor(aDtor)
-    {
-        m_Ctor(m_Obj);
-    }
-
-    virtual ~CRAII()
-    {
-        m_Dtor(m_Obj);
-    }
-
-private:
-    std::shared_ptr<Type> m_Obj;
-    TypeFunction m_Ctor;
-    TypeFunction m_Dtor;
-};
-
-
 //--------------------------------------------------------------
 template<typename Type>
 class lock_guard_ex
