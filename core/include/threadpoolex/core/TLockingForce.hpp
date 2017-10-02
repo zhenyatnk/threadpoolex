@@ -10,7 +10,18 @@ namespace core {
 template<class Type>
 class TLockingEx
     :public Type, public TLockingEx<void>
-{};
+{
+public:
+    TLockingEx() = default;
+
+    TLockingEx(Type&& aRght)
+        :Type(std::move(aRght))
+    {}
+
+    TLockingEx(const Type& aRght)
+        :Type(aRght)
+    {}
+};
 
 //--------------------------------------------------------------
 template<>

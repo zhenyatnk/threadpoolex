@@ -4,6 +4,26 @@
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 using namespace threadpoolex::core;
+namespace{
+
+class TestObjectValueRef
+{
+public:
+    explicit TestObjectValueRef(int& x)
+        :a(x)
+    {}
+    int &a;
+};
+
+class TestObjectConstValue
+{
+public:
+    explicit TestObjectConstValue(int x)
+        :a(x)
+    {}
+    int a;
+};
+}
 
 class TNotifier_test
     :public ::testing::Test
@@ -17,6 +37,20 @@ public:
 TEST_F(TNotifier_test, void_empty)
 {
     TNotifier<void> aTest;
+}
+
+TEST_F(TNotifier_test, parameters_lvalue_ctor)
+{
+    TestObjectConstValue v(10);
+    TNotifier<TestObjectConstValue> aTest(v);
+    v.a = 25;
+    ASSERT_EQ(10, aTest.a);
+}
+
+TEST_F(TNotifier_test, parameters_rvalue_ctor)
+{
+    TNotifier<TestObjectConstValue> aTest(TestObjectConstValue(5));
+    ASSERT_EQ(5, aTest.a);
 }
 
 TEST_F(TNotifier_test, void_notify_one)

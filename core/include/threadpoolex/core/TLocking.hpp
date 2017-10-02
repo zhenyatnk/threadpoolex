@@ -2,6 +2,7 @@
 
 #include <threadpoolex/version/version.hpp>
 #include <mutex>
+#include <utility>
 
 namespace threadpoolex {
 namespace core {
@@ -9,7 +10,18 @@ namespace core {
 template<class Type>
 class TLocking
     :public Type, public TLocking<void>
-{};
+{
+public:
+    TLocking() = default;
+
+    TLocking(const Type& aRght)
+        :Type(aRght)
+    {}
+    
+    TLocking(Type&& aRght)
+        :Type(std::move(aRght))
+    {}
+};
 //--------------------------------------------------------------
 
 template<>

@@ -12,6 +12,16 @@ template<class Type>
 class TNotifier
     :public Type, public TNotifier<void>
 {
+public:
+    TNotifier() = default;
+
+    TNotifier(Type&& aRght)
+        :Type(std::move(aRght))
+    {}
+
+    TNotifier(const Type& aRght)
+        :Type(aRght)
+    {}
 };
 //--------------------------------------------------------------
 template<>

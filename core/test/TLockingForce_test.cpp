@@ -4,6 +4,26 @@
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 using namespace threadpoolex::core;
+namespace{
+
+class TestObjectValueRef
+{
+public:
+    explicit TestObjectValueRef(int& x)
+        :a(x)
+    {}
+    int &a;
+};
+
+class TestObjectConstValue
+{
+public:
+    explicit TestObjectConstValue(int x)
+        :a(x)
+    {}
+    int a;
+};
+}
 
 class TLockingEx_test
     :public ::testing::Test
@@ -20,6 +40,20 @@ TEST_F(TLockingEx_test, void_lock_unlock)
     TLockingEx<void> aTest;
     aTest.lock();
     aTest.unlock();
+}
+
+TEST_F(TLockingEx_test, parameters_lvalue_ctor)
+{
+    TestObjectConstValue v(10);
+    TLockingEx<TestObjectConstValue> aTest(v);
+    v.a = 25;
+    ASSERT_EQ(10, aTest.a);
+}
+
+TEST_F(TLockingEx_test, parameters_rvalue_ctor)
+{
+    TLockingEx<TestObjectConstValue> aTest(TestObjectConstValue(5));
+    ASSERT_EQ(5, aTest.a);
 }
 
 TEST_F(TLockingEx_test, void_lock_other_thread)

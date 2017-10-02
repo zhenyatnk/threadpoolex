@@ -12,7 +12,18 @@ namespace core {
 template<class Type>
 class TLockingShared
     :public Type, public TLockingShared<void>
-{};
+{
+public:
+    TLockingShared() = default;
+
+    TLockingShared(Type&& aRght)
+        :Type(std::move(aRght))
+    {}
+
+    TLockingShared(const Type& aRght)
+        :Type(aRght)
+    {}
+};
 
 template<>
 class TLockingShared <void>
