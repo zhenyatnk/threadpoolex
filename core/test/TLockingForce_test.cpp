@@ -6,15 +6,6 @@
 using namespace threadpoolex::core;
 namespace{
 
-class TestObjectValueRef
-{
-public:
-    explicit TestObjectValueRef(int& x)
-        :a(x)
-    {}
-    int &a;
-};
-
 class TestObjectConstValue
 {
 public:

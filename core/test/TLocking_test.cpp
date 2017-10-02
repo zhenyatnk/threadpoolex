@@ -15,15 +15,6 @@ public:
     int a;
 };
 
-class TestObjectValueRef
-{
-public:
-    explicit TestObjectValueRef(int& x)
-        :a(x)
-    {}
-    int &a;
-};
-
 class TestObjectConstValue
 {
 public:
