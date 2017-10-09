@@ -20,7 +20,7 @@ set(${_project_name}_${_component_name}_PRIVATE_INCLUDE_DIR ${_private_includes_
     CACHE INTERNAL "${_project_name}_${_component_name} private headers directory.")
     
 # Set a directory for version file.
-set(${_project_name}_${_component_name}_PRIVATE_BINARY_DIR ${CMAKE_BINARY_DIR}/binary_include
+set(${_project_name}_${_component_name}_PRIVATE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/../binary_include
     CACHE INTERNAL "${_project_name}_${_component_name} private binary headers directory.")
 
 # Put a list of header files into the cache.
