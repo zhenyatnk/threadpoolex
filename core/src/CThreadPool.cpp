@@ -12,7 +12,7 @@ namespace core {
 namespace {
 //---------------------------------------------------------------
 
-using TDequeTasks = TNotifier<TLockingEx<std::deque<ITask::Ptr>>>;
+using TDequeTasks = TLockingEx<std::deque<ITask::Ptr>>;
 
 //---------------------------------------------------------------
 class IThread
@@ -51,7 +51,6 @@ CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
 CWorker::~CWorker()
 {
     m_Stop = true;
-    m_Tasks->notify_one();
 }
 
 void CWorker::Run()
@@ -64,8 +63,8 @@ void CWorker::Run()
             if (m_Stop)
                 break;
 
-            if (aTasks->empty())
-                aTasks->wait();
+            while (aTasks->empty() && m_Stop)
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
             if (m_Stop)
                 break;
@@ -123,7 +122,6 @@ void CThreadPool::AddTask(ITask::Ptr aTask)
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     TryExpansionNonLock();
     m_Tasks->push_back(aTask);
-    m_Tasks->notify_one();
 }
 
 void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
@@ -131,7 +129,6 @@ void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     TryExpansionNonLock();
     m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
-    m_Tasks->notify_all();
 }
 
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
@@ -139,7 +136,6 @@ void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     TryExpansionNonLock();
     m_Tasks->push_front(aTask);
-    m_Tasks->notify_one();
 }
 
 void CThreadPool::TryExpansion()
