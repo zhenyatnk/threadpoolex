@@ -1,11 +1,14 @@
 #pragma once
 
+#include <threadpoolex/core/ITaskObserver.hpp>
+
 #include <memory>
 
 namespace threadpoolex {
 namespace core {
 
 class ITask
+    :public virtual IObservableTask
 {
 public:
     using Ptr = std::shared_ptr<ITask>;

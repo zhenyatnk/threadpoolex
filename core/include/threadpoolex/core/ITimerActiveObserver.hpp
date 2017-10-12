@@ -9,9 +9,6 @@
 
 namespace threadpoolex {
 namespace core {
-namespace {
-#define SAFE_CALL_LOG(func, catch_error) {try { func; } catch (std::exception &aError) { catch_error(aError.what(), 0);}}
-}
 
 class IObserverTimer
     :public IObserverError
@@ -58,7 +55,7 @@ public:
 };
 
 class CObservableTimer
-    :public virtual IObservableTimer, 
+    :public virtual IObservableTimer,
      public INotifierError,
      public INotifierTimerClose,
      public INotifierTimerCheck
@@ -80,13 +77,13 @@ public:
     virtual void NotifyClose() override
     {
         for (auto lObserver : m_ListObservers)
-            SAFE_CALL_LOG(lObserver->HandleClose(), this->NotifyError);
+            SAFE_CALL_BY_OBSERVER_LOG(lObserver->HandleClose(), this->NotifyError);
     }
-    
+
     virtual void NotifyCheck() override
     {
         for (auto lObserver : m_ListObservers)
-            SAFE_CALL_LOG(lObserver->HandleCheck(), this->NotifyError);
+            SAFE_CALL_BY_OBSERVER_LOG(lObserver->HandleCheck(), this->NotifyError);
     }
 
     virtual void NotifyError(const std::string &aMessage, const int& aErrorCode) override
@@ -108,8 +105,11 @@ class THREADPOOLEX_CORE_EXPORT EmptyObserverTimer
 public:
     virtual void HandleCheck() override
     {}
-    
+
     virtual void HandleClose() override
+    {}
+
+    virtual void HandleError(const std::string &aMessage, const int& aErrorCode) override
     {}
 };
 

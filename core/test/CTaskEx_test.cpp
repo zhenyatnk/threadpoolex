@@ -6,14 +6,14 @@
 using namespace threadpoolex::core;
 //--------------------------------------------------------------------------------------------------------------------------------------
 class MockTask
-    :public ITask
+    :public ITask, virtual CBaseObservableTask
 {
 public:
     MOCK_METHOD0(Execute, void());
 };
 
 class WaitingTask
-    :public ITask
+    :public ITask, virtual CBaseObservableTask
 {
 public:
     WaitingTask(std::atomic_int& aReady, std::mutex& aMutex)

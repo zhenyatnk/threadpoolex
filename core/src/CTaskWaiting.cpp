@@ -1,10 +1,12 @@
+#include <threadpoolex/core/RAII.hpp>
+#include <threadpoolex/core/ITaskExceptions.hpp>
 #include <threadpoolex/core/TaskWaiting.hpp>
 
 namespace threadpoolex {
 namespace core {
 
 class CTaskWaiting
-    :public ITask
+    :public ITask, virtual CBaseObservableTask
 {
 public:
     CTaskWaiting(ITask::Ptr aTask, std::promise<void> &&aPromise);
@@ -22,8 +24,15 @@ CTaskWaiting::CTaskWaiting(ITask::Ptr aTask, std::promise<void> &&aPromise)
 
 void CTaskWaiting::Execute()
 {
-    m_Task->Execute();
-    m_Promise.set_value();
+    try
+    {
+        CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
+                                                           [](CObservableTask::Ptr aObserver) { aObserver->NotifyComplete(); });
+        m_Task->Execute();
+        m_Promise.set_value();
+
+    }
+    CATCH_CODE_ERROR(exceptions_base::error_base, this->GetObserver()->NotifyError);
 }
 
 ITask::Ptr CreateWaitingTask(ITask::Ptr aTask, std::promise<void> &&aPromise)

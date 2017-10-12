@@ -6,6 +6,8 @@
 namespace threadpoolex {
 namespace core {
 
+#define SAFE_CALL_BY_OBSERVER_LOG(func, catch_error) {try { func; } catch (std::exception &aError) { catch_error(aError.what(), 0);}}
+
 class IObserverError
 {
 public:
