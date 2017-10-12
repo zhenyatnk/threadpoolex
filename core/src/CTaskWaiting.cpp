@@ -30,9 +30,18 @@ void CTaskWaiting::Execute()
                                                            [](CObservableTask::Ptr aObserver) { aObserver->NotifyComplete(); });
         m_Task->Execute();
         m_Promise.set_value();
-
     }
-    CATCH_CODE_ERROR(exceptions_base::error_base, this->GetObserver()->NotifyError);
+    catch (exceptions_base::error_base &aErr)
+    {
+        this->GetObserver()->NotifyError(aErr.what(), aErr.GetErrorCode());
+        m_Promise.set_exception(std::current_exception());
+        m_Promise.set_value();
+    }
+    catch (...)
+    {
+        m_Promise.set_exception(std::current_exception());
+        m_Promise.set_value();
+    }
 }
 
 ITask::Ptr CreateWaitingTask(ITask::Ptr aTask, std::promise<void> &&aPromise)
