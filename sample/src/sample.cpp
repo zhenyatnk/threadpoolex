@@ -1,5 +1,5 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/SystemInfo.hpp>
+#include <threadpoolex/core/ISystemInfo.hpp>
 #include <threadpoolex/core/ITimerActive.hpp>
 
 #include <stdio.h>

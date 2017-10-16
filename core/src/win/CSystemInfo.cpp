@@ -1,4 +1,4 @@
-#include <threadpoolex/core/SystemInfo.hpp>
+#include <threadpoolex/core/ISystemInfo.hpp>
 
 #ifdef _WIN32
 

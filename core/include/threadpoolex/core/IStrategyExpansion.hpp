@@ -1,5 +1,7 @@
 #pragma once
 
+#include <threadpoolex/core/ISystemInfo.hpp>
+
 #include <memory>
 
 namespace threadpoolex {
@@ -17,6 +19,8 @@ public:
 };
 
 IStrategyExpansion::Ptr CreateExpansionToMax(unsigned int aCountMaxThread);
+IStrategyExpansion::Ptr CreateExpansionToCPU(IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
+IStrategyExpansion::Ptr CreateExpansionToCPUByProccess(IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
 
 }
 }
