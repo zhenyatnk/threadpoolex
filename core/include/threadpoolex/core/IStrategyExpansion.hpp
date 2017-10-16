@@ -13,7 +13,7 @@ public:
 public:
     virtual ~IStrategyExpansion() = default;
 
-    virtual bool NeedExpansion(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const = 0;
+    virtual int8_t GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const = 0;
 };
 
 IStrategyExpansion::Ptr CreateExpansionToMax(unsigned int aCountMaxThread);

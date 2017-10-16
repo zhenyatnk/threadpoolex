@@ -10,7 +10,7 @@ class CExpansionToMax
 public:
     explicit CExpansionToMax(unsigned int aCountMaxThread);
 
-    virtual bool NeedExpansion(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const override;
+    virtual int8_t GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const override;
 
 private:
     unsigned int m_CountMaxThread;
@@ -20,9 +20,10 @@ CExpansionToMax::CExpansionToMax(unsigned int aCountMaxThread)
     :m_CountMaxThread(aCountMaxThread)
 {}
 
-bool CExpansionToMax::NeedExpansion(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const
+int8_t CExpansionToMax::GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const
 {
-    return !!aCountUnworkingTasks && m_CountMaxThread > aCountExistsThreads;
+
+    return (!!aCountUnworkingTasks && m_CountMaxThread > aCountExistsThreads) ? 1 : 0 ;
 }
 
 IStrategyExpansion::Ptr CreateExpansionToMax(unsigned int aCountMaxThread)

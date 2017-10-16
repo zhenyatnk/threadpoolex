@@ -22,6 +22,8 @@ public:
 
 public:
     virtual ~IThread() = default;
+
+    virtual void SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks) = 0;
 };
 
 }
@@ -32,6 +34,8 @@ class CWorker
 public:
     explicit CWorker(std::shared_ptr<TDequeTasks> aTasks);
     virtual ~CWorker();
+
+    virtual void SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks) override;
 
 protected:
     void Run();
@@ -51,6 +55,11 @@ CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
 CWorker::~CWorker()
 {
     m_Stop = true;
+}
+
+void CWorker::SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks)
+{
+    m_Tasks = aTasks;
 }
 
 void CWorker::Run()
@@ -103,9 +112,12 @@ public:
 
 protected:
     void TryExpansionNonLock();
+    void ParkingWorkers(uint8_t aCount);
+    void AddWorkers(uint8_t aCount);
 
 private:
     std::vector<IThread::Ptr> m_Threads;
+    std::vector<IThread::Ptr> m_ParkingThreads;
     std::shared_ptr<TDequeTasks> m_Tasks;
     IStrategyExpansion::Ptr m_Expansion;
 };
@@ -146,8 +158,39 @@ void CThreadPool::TryExpansion()
 
 void CThreadPool::TryExpansionNonLock()
 {
-    if (m_Expansion->NeedExpansion(m_Tasks->size(), m_Threads.size()))
-        m_Threads.push_back(std::make_shared<CWorker>(m_Tasks));
+    auto lDiff = m_Expansion->GetOptimalDiffWorkers(m_Tasks->size(), m_Threads.size());
+
+    if      (lDiff > 0)  AddWorkers(lDiff);
+    else if (lDiff < 0)  ParkingWorkers(abs(lDiff));
+}
+
+void CThreadPool::ParkingWorkers(uint8_t aCount)
+{
+    while (!!aCount-- && !m_Threads.empty())
+    {
+        auto lWorker = m_Threads.front();
+        m_Threads.pop_back();
+        lWorker->SetDequeTasksNonLock(std::make_shared<TDequeTasks>());
+        m_ParkingThreads.push_back(lWorker);
+    }
+}
+
+void CThreadPool::AddWorkers(uint8_t aCount)
+{
+    while (!!aCount--)
+    {
+        IThread::Ptr lWorker;
+        if (!m_ParkingThreads.empty())
+        {
+            lWorker = m_ParkingThreads.front();
+            m_ParkingThreads.pop_back();
+            lWorker->SetDequeTasksNonLock(m_Tasks);
+        }
+        else
+            lWorker = std::make_shared<CWorker>(m_Tasks);
+
+        m_Threads.push_back(lWorker);
+    }
 }
 
 IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion)
