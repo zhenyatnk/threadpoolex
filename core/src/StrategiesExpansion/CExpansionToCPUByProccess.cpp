@@ -27,9 +27,9 @@ int8_t CExpansionToCPUByProccess::GetOptimalDiffWorkers(unsigned int aCountUnwor
     int8_t lDiff = 0;
 
     auto lCurrentCPU = m_UsageCPUProccess->GetUsageCPUProccess();
-    if (lCurrentCPU < m_MaxUsageCPU)
+    if (lCurrentCPU < m_MaxUsageCPU - m_MaxUsageCPU / 10)
         lDiff = 1;
-    else if (lCurrentCPU > m_MaxUsageCPU + m_MaxUsageCPU / 10)
+    else if (lCurrentCPU > m_MaxUsageCPU)
         lDiff = -1;
 
     if ((!aCountUnworkingTasks && lDiff == 1) ||
