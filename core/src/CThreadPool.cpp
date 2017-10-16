@@ -132,21 +132,18 @@ CThreadPool::CThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Pt
 void CThreadPool::AddTask(ITask::Ptr aTask)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-    TryExpansionNonLock();
     m_Tasks->push_back(aTask);
 }
 
 void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-    TryExpansionNonLock();
     m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
 }
 
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
 {
     force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
-    TryExpansionNonLock();
     m_Tasks->push_front(aTask);
 }
 
@@ -168,7 +165,7 @@ void CThreadPool::ParkingWorkers(uint8_t aCount)
 {
     while (!!aCount-- && !m_Threads.empty())
     {
-        auto lWorker = m_Threads.front();
+        auto lWorker = m_Threads.back();
         m_Threads.pop_back();
         lWorker->SetDequeTasksNonLock(std::make_shared<TDequeTasks>());
         m_ParkingThreads.push_back(lWorker);
@@ -182,7 +179,7 @@ void CThreadPool::AddWorkers(uint8_t aCount)
         IThread::Ptr lWorker;
         if (!m_ParkingThreads.empty())
         {
-            lWorker = m_ParkingThreads.front();
+            lWorker = m_ParkingThreads.back();
             m_ParkingThreads.pop_back();
             lWorker->SetDequeTasksNonLock(m_Tasks);
         }
