@@ -107,37 +107,19 @@ public:
     virtual float GetUsageCPU() const override;
     virtual float GetUsageCPUProccess() const override;
 
-protected:
-    IUsageCPU::Ptr GetGetterUsageCPU() const;
-    IUsageCPUProccess::Ptr GetGetterUsageCPUProccess() const;
-
 private:
-    mutable IUsageCPU::Ptr m_CPU;
-    mutable IUsageCPUProccess::Ptr m_CPUByProccess;
+    CGetterUsageCPU m_CPU;
+    CGetterUsageCPUProccess m_CPUByProccess;
 };
-
-IUsageCPU::Ptr CSystemInfo::GetGetterUsageCPU() const
-{
-    if (!m_CPU)
-        m_CPU = std::make_shared<CGetterUsageCPU>();
-    return m_CPU;
-}
-
-IUsageCPUProccess::Ptr CSystemInfo::GetGetterUsageCPUProccess() const
-{
-    if (!m_CPUByProccess)
-        m_CPUByProccess = std::make_shared<CGetterUsageCPUProccess>();
-    return m_CPUByProccess;
-}
 
 float CSystemInfo::GetUsageCPU() const
 {
-    return GetGetterUsageCPU()->GetUsageCPU();
+    return m_CPU.GetUsageCPU();
 }
 
 float CSystemInfo::GetUsageCPUProccess() const
 {
-    return GetGetterUsageCPUProccess()->GetUsageCPUProccess();
+    return m_CPUByProccess.GetUsageCPUProccess();
 }
 
 ISystemInfo::Ptr CreateSystemInfo()
