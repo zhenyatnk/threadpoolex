@@ -15,6 +15,7 @@ class IThreadPool
 {
 public:
     using Ptr = std::shared_ptr<IThreadPool>;
+    using WPtr = std::weak_ptr<IThreadPool>;    
 
 public:
     virtual ~IThreadPool() = default;

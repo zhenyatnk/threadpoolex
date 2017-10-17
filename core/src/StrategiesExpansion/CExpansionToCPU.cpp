@@ -1,5 +1,7 @@
 #include <threadpoolex/core/IStrategyExpansion.hpp>
 
+#include <iostream>
+
 namespace threadpoolex {
 namespace core {
 
@@ -27,7 +29,7 @@ int8_t CExpansionToCPU::GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks,
     int8_t lDiff = 0;
 
     auto lCurrentCPU = m_UsageCPU->GetUsageCPU();
-    if (lCurrentCPU < m_MaxUsageCPU - m_MaxUsageCPU / 10)
+    if (lCurrentCPU < m_MaxUsageCPU - m_MaxUsageCPU / 5)
         lDiff = 1;
     else if (lCurrentCPU > m_MaxUsageCPU)
         lDiff = -1;

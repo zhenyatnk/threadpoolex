@@ -65,14 +65,14 @@ void CWorker::SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks)
 void CWorker::Run()
 {
     m_ThreadRaii = thread_join_raii(std::thread(
-    [this](std::shared_ptr<TDequeTasks> aTasks)
+    [this]()
     {
         while (true)
         {
             if (m_Stop)
                 break;
 
-            while (aTasks->empty() && m_Stop)
+            while (m_Tasks->empty() && !m_Stop)
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
             if (m_Stop)
@@ -81,12 +81,12 @@ void CWorker::Run()
             {
                 ITask::Ptr lTask;
                 {
-                    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(aTasks);
+                    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
 
-                    if (!aTasks->empty())
+                    if (!m_Tasks->empty())
                     {
-                        lTask = aTasks->front();
-                        aTasks->pop_front();
+                        lTask = m_Tasks->front();
+                        m_Tasks->pop_front();
                     }
                 }
 
@@ -94,7 +94,7 @@ void CWorker::Run()
                     lTask->Execute();
             }
         }
-    }, m_Tasks));
+    }));
 }
 //------------------------------------------------------------------
 
