@@ -171,6 +171,10 @@ function(layout_source_groups)
 
 endfunction()
 
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/binary)
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/binary/" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+endif()
+
 # Layout source files in IDE project according to the directory structure.
 layout_source_groups(ITEMS
                         ${${_project_name}_${_component_name}_HEADERS}

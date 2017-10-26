@@ -1,5 +1,6 @@
 #pragma once
 
+#include <threadpoolex/core/export.hpp>
 #include <stdexcept>
 
 namespace exceptions_base {
