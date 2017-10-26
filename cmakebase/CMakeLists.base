@@ -68,8 +68,15 @@ if("${${_project_name}_${_component_name}_component_type}" STREQUAL "library")
     #
     # Install rules
     #
-    install(TARGETS ${_project_name}_${_component_name}
-      DESTINATION lib)
+
+    if((NOT "${${_project_name}_${_component_name}_library_type}" STREQUAL "STATIC" AND ${BUILD_SHARED_LIBS}) OR "${${_project_name}_${_component_name}_library_type}" STREQUAL "SHARED")
+        install(TARGETS ${_project_name}_${_component_name}
+        DESTINATION bin)
+    else()
+        install(TARGETS ${_project_name}_${_component_name}
+          DESTINATION lib)
+    endif()
+
     install(DIRECTORY ${${_project_name}_${_component_name}_INCLUDE_DIR}/
       DESTINATION include)
     install(DIRECTORY ${${_project_name}_${_component_name}_PRIVATE_BINARY_DIR}/
