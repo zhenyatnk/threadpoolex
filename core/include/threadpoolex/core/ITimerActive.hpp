@@ -19,8 +19,8 @@ public:
     virtual ~ITimerActive() = default;
 };
 //--------------------------------------------------------------
-ITimerActive::Ptr CreateTimerActive(unsigned int aInterval);
-ITimerActive::Ptr CreateTimerActive(unsigned int aInterval, unsigned int aCountRepeat);
+THREADPOOLEX_CORE_EXPORT ITimerActive::Ptr CreateTimerActive(unsigned int aInterval);
+THREADPOOLEX_CORE_EXPORT ITimerActive::Ptr CreateTimerActive(unsigned int aInterval, unsigned int aCountRepeat);
 
 }
 }

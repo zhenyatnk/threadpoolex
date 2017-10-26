@@ -22,7 +22,7 @@ namespace exceptions_base {
 #define CATCH_CODE_ERROR(type_exception, HandlerError) catch(type_exception &ex){ HandlerError(ex.what(), ex.GetErrorCode()); }
 #define CATCH_ERROR(type_exception, HandlerError) catch(type_exception &ex){ HandlerError(ex.what(), ERR_UNKNOWN); }
 
-class error_base
+class THREADPOOLEX_CORE_EXPORT error_base
     :public std::runtime_error
 {
 public:
@@ -44,7 +44,7 @@ namespace threadpoolex {
 namespace core {
 namespace exceptions {
 
-class threadpoolex_error_base
+class THREADPOOLEX_CORE_EXPORT threadpoolex_error_base
     :public exceptions_base::error_base
 {
 public:

@@ -23,7 +23,7 @@ public:
     virtual bool IsProcessing() const = 0;
 };
 
-ITaskEx::Ptr CreateTaskEx(ITask::Ptr aTask);
+THREADPOOLEX_CORE_EXPORT ITaskEx::Ptr CreateTaskEx(ITask::Ptr aTask);
 
 }
 }

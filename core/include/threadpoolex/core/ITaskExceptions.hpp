@@ -1,12 +1,12 @@
 #pragma once
-
+#include <threadpoolex/core/export.hpp>
 #include <threadpoolex/core/BaseExceptions.hpp>
 
 namespace threadpoolex {
 namespace core {
 namespace exceptions {
 
-class task_error
+class THREADPOOLEX_CORE_EXPORT task_error
     :public exceptions::threadpoolex_error_base
 {
 public:

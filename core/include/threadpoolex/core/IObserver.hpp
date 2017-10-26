@@ -1,5 +1,7 @@
 #pragma once
 
+#include <threadpoolex/core/export.hpp>
+
 #include <memory>
 #include <string>
 
@@ -8,7 +10,7 @@ namespace core {
 
 #define SAFE_CALL_BY_OBSERVER_LOG(func, catch_error) {try { func; } catch (std::exception &aError) { catch_error(aError.what(), 0);}}
 
-class IObserverError
+class THREADPOOLEX_CORE_EXPORT IObserverError
 {
 public:
     using Ptr = std::shared_ptr<IObserverError>;
@@ -19,7 +21,7 @@ public:
     virtual void HandleError(const std::string &aMessage, const int& aErrorCode) = 0;
 };
 
-class INotifierError
+class THREADPOOLEX_CORE_EXPORT INotifierError
 {
 public:
     using Ptr = std::shared_ptr<INotifierError>;

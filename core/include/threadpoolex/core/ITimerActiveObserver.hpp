@@ -54,7 +54,7 @@ public:
     virtual void RemoveObserver(IObserverTimer::Ptr aHandler) = 0;
 };
 
-class CObservableTimer
+class THREADPOOLEX_CORE_EXPORT CObservableTimer
     :public virtual IObservableTimer,
      public INotifierError,
      public INotifierTimerClose,

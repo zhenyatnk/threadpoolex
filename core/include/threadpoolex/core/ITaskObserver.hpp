@@ -10,7 +10,7 @@
 namespace threadpoolex {
 namespace core {
 
-class IObserverTask
+class THREADPOOLEX_CORE_EXPORT IObserverTask
     :public IObserverError
 {
 public:
@@ -23,7 +23,7 @@ public:
     virtual void HandleComplete() = 0;
 };
 
-class INotifierTaskStart
+class THREADPOOLEX_CORE_EXPORT INotifierTaskStart
 {
 public:
     using Ptr = std::shared_ptr<INotifierTaskStart>;
@@ -34,7 +34,7 @@ public:
     virtual void NotifyStart() = 0;
 };
 
-class INotifierTaskComplete
+class THREADPOOLEX_CORE_EXPORT INotifierTaskComplete
 {
 public:
     using Ptr = std::shared_ptr<INotifierTaskComplete>;
@@ -45,7 +45,7 @@ public:
     virtual void NotifyComplete() = 0;
 };
 
-class IObservableTask
+class THREADPOOLEX_CORE_EXPORT IObservableTask
 {
 public:
     virtual ~IObservableTask() = default;
@@ -54,7 +54,7 @@ public:
     virtual void RemoveObserver(IObserverTask::Ptr aHandler) = 0;
 };
 
-class CObservableTask
+class THREADPOOLEX_CORE_EXPORT CObservableTask
     :public virtual IObservableTask,
      public INotifierError,
      public INotifierTaskStart,

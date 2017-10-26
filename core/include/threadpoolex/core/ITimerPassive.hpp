@@ -1,5 +1,6 @@
 #pragma once
 
+#include <threadpoolex/core/export.hpp>
 #include <threadpoolex/version/version.hpp>
 
 #include <memory>
@@ -20,7 +21,7 @@ public:
     virtual void Reset() = 0;
 };
 //--------------------------------------------------------------
-ITimerPassive::Ptr CreateTimerPassive(unsigned int aInterval);
+THREADPOOLEX_CORE_EXPORT ITimerPassive::Ptr CreateTimerPassive(unsigned int aInterval);
 
 }
 }

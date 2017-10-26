@@ -27,7 +27,7 @@ public:
     virtual void TryExpansion() = 0;
 };
 //--------------------------------------------------------------
-IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion);
+THREADPOOLEX_CORE_EXPORT IThreadPool::Ptr CreateThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Ptr aExpansion);
 
 }
 }

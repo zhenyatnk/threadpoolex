@@ -1,4 +1,5 @@
 #pragma once
+#include <threadpoolex/core/export.hpp>
 #include <threadpoolex/core/TSingleton.hpp>
 
 #include <memory>
@@ -39,7 +40,7 @@ public:
 };
 
 //------------------------------------------------------------------------------------
-ISystemInfo::Ptr CreateSystemInfo();
+THREADPOOLEX_CORE_EXPORT ISystemInfo::Ptr CreateSystemInfo();
 
 SINGLETON_NAME(ISystemInfo::Ptr, CreateSystemInfo(), SystemInfoGlobal);
 //------------------------------------------------------------------------------------
