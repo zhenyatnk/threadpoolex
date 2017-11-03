@@ -25,7 +25,7 @@ CWaitFuture::CWaitFuture(std::future<void> &&aFuture)
 void CWaitFuture::Wait()
 {
     if (m_Future.valid())
-        m_Future.wait();
+        m_Future.get();
 }
 //-----------------------------------------------------------
 class CTaskWait
@@ -60,12 +60,10 @@ void CTaskWait::Execute()
     {
         this->GetObserver()->NotifyError(aErr.what(), aErr.GetErrorCode());
         m_Promise.set_exception(std::current_exception());
-        m_Promise.set_value();
     }
     catch (...)
     {
         m_Promise.set_exception(std::current_exception());
-        m_Promise.set_value();
     }
 }
 //-------------------------------------------------------

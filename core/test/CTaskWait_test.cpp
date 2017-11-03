@@ -25,6 +25,18 @@ private:
     std::atomic_int& m_Ready;
     std::mutex& m_Mutex;
 };
+//--------------------------------------------------------------------------------------------------------------------------------------
+class ExceptionTask
+    :public ITask, virtual CBaseObservableTask
+{
+public:
+
+    void Execute()
+    {
+        throw std::exception("test");
+    }
+};
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------
 class CTaskWait_test
@@ -51,5 +63,19 @@ TEST_F(CTaskWait_test, simple)
         lMutex.unlock();
         waiter->Wait();
         lTestThread.join();
+    }
+}
+
+TEST_F(CTaskWait_test, excpetion)
+{
+    std::atomic_int lReady = 0;
+
+    IWait::Ptr waiter;
+    ITask::Ptr lTask = CreateTaskWait(std::make_shared<ExceptionTask>(), waiter);
+    {
+        std::thread lTestThread([lTask]() {lTask->Execute(); });
+        ASSERT_THROW(waiter->Wait(), std::exception);
+        if(lTestThread.joinable())
+            lTestThread.join();
     }
 }
