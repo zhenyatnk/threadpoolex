@@ -7,7 +7,7 @@
 namespace threadpoolex {
 namespace core {
 
-THREADPOOLEX_CORE_EXPORT ITask::Ptr CreateWaitingTask(ITask::Ptr aTask, std::promise<void> &&aPromise);
+THREADPOOLEX_CORE_EXPORT ITask::Ptr CreateTaskPromise(ITask::Ptr aTask, std::promise<void> &&aPromise);
 
 }
 }

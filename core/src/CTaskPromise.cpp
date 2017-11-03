@@ -1,15 +1,15 @@
 #include <threadpoolex/core/RAII.hpp>
 #include <threadpoolex/core/ITaskExceptions.hpp>
-#include <threadpoolex/core/TaskWaiting.hpp>
+#include <threadpoolex/core/TaskPromise.hpp>
 
 namespace threadpoolex {
 namespace core {
 
-class CTaskWaiting
+class CTaskPromise
     :public ITask, virtual CBaseObservableTask
 {
 public:
-    CTaskWaiting(ITask::Ptr aTask, std::promise<void> &&aPromise);
+    CTaskPromise(ITask::Ptr aTask, std::promise<void> &&aPromise);
 
     virtual void Execute() override;
 
@@ -18,11 +18,11 @@ private:
     std::promise<void> m_Promise;
 };
 
-CTaskWaiting::CTaskWaiting(ITask::Ptr aTask, std::promise<void> &&aPromise)
+CTaskPromise::CTaskPromise(ITask::Ptr aTask, std::promise<void> &&aPromise)
     :m_Task(aTask), m_Promise(std::move(aPromise))
 {}
 
-void CTaskWaiting::Execute()
+void CTaskPromise::Execute()
 {
     try
     {
@@ -43,10 +43,11 @@ void CTaskWaiting::Execute()
         m_Promise.set_value();
     }
 }
+//-------------------------------------------------------
 
-ITask::Ptr CreateWaitingTask(ITask::Ptr aTask, std::promise<void> &&aPromise)
+ITask::Ptr CreateTaskPromise(ITask::Ptr aTask, std::promise<void> &&aPromise)
 {
-    return std::make_shared<CTaskWaiting>(aTask, std::move(aPromise));
+    return std::make_shared<CTaskPromise>(aTask, std::move(aPromise));
 }
 
 }
