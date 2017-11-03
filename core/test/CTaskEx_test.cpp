@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <threadpoolex/core/ITaskEx.hpp>
+
 #include <future>
 
 using namespace threadpoolex::core;
@@ -121,3 +122,20 @@ TEST_F(CTaskEx_test, execute_GetTimeEnd)
 
     ASSERT_NE(std::chrono::steady_clock::time_point(), lTask->GetTimeEnd());
 }
+
+TEST_F(CTaskEx_test, wait)
+{
+    std::atomic_int lReady = 0;
+    std::mutex lMutex;
+    lMutex.lock();
+
+    ITaskEx::Ptr lTask = CreateTaskEx(std::make_shared<WaitingTask>(lReady, lMutex));
+    std::thread lTestThread([lTask]() {lTask->Execute(); });
+    while (lReady != 1);
+
+    lMutex.unlock();
+    lTestThread.join();
+
+    ASSERT_NE(std::chrono::steady_clock::time_point(), lTask->GetTimeEnd());
+}
+

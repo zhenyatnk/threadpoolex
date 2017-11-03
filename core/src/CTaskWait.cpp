@@ -1,33 +1,50 @@
 #include <threadpoolex/core/RAII.hpp>
 #include <threadpoolex/core/ITaskExceptions.hpp>
 #include <threadpoolex/core/ITaskWait.hpp>
-#include <threadpoolex/core/TaskPromise.hpp>
 
 #include <future>
 
 namespace threadpoolex {
 namespace core {
 
-//-------------------------------------------------------
-class CTaskWait
-    :public ITaskWait, virtual CBaseObservableTask
+class CWaitFuture
+    :public IWait
 {
 public:
-    CTaskWait(ITask::Ptr aTask);
-
-    virtual void Execute() override;
+    CWaitFuture(std::future<void> &&aFuture);
     virtual void Wait() override;
 
 private:
-    ITask::Ptr m_Task;
     std::future<void> m_Future;
 };
 
-CTaskWait::CTaskWait(ITask::Ptr aTask)
+CWaitFuture::CWaitFuture(std::future<void> &&aFuture)
+    :m_Future(std::move(aFuture))
+{}
+
+void CWaitFuture::Wait()
 {
-    std::promise<void> promise;
-    m_Future = promise.get_future();
-    m_Task = CreateTaskPromise(aTask, std::move(promise));
+    if (m_Future.valid())
+        m_Future.wait();
+}
+//-----------------------------------------------------------
+class CTaskWait
+    :public ITask, virtual CBaseObservableTask
+{
+public:
+    CTaskWait(ITask::Ptr aTask, IWait::Ptr &aWaiter);
+
+    virtual void Execute() override;
+
+private:
+    ITask::Ptr m_Task;
+    std::promise<void> m_Promise;
+};
+
+CTaskWait::CTaskWait(ITask::Ptr aTask, IWait::Ptr &aWaiter)
+    :m_Task(aTask)
+{
+    aWaiter = std::make_shared<CWaitFuture>(m_Promise.get_future());
 }
 
 void CTaskWait::Execute()
@@ -37,25 +54,26 @@ void CTaskWait::Execute()
         CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
             [](CObservableTask::Ptr aObserver) { aObserver->NotifyComplete(); });
         m_Task->Execute();
+        m_Promise.set_value();
     }
     catch (exceptions_base::error_base &aErr)
     {
         this->GetObserver()->NotifyError(aErr.what(), aErr.GetErrorCode());
+        m_Promise.set_exception(std::current_exception());
+        m_Promise.set_value();
     }
-}
-
-void CTaskWait::Wait()
-{
-    if(m_Future.valid())
-        m_Future.wait();
+    catch (...)
+    {
+        m_Promise.set_exception(std::current_exception());
+        m_Promise.set_value();
+    }
 }
 //-------------------------------------------------------
 
-ITaskWait::Ptr CreateTaskWait(ITask::Ptr aTask)
+ITask::Ptr CreateTaskWait(ITask::Ptr aTask, IWait::Ptr &aWaiter)
 {
-    return std::make_shared<CTaskWait>(aTask);
+    return std::make_shared<CTaskWait>(aTask, aWaiter);
 }
-
 
 }
 }
