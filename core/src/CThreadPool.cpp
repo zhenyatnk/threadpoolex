@@ -55,6 +55,7 @@ CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
 CWorker::~CWorker()
 {
     m_Stop = true;
+    m_ThreadRaii = thread_join_raii();
 }
 
 void CWorker::SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks)

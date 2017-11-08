@@ -49,8 +49,8 @@ protected:
     void Run();
 
 private:
-    thread_join_raii m_Timer;
     std::timed_mutex m_Stop;
+    thread_join_raii m_Timer;
     unsigned int m_IntervalMs;
     unsigned int m_CountRepeat;
     bool m_InfinityRepeat;
@@ -72,6 +72,7 @@ CTimerActive::~CTimerActive()
 {
     m_Stop.unlock();
     this->GetObserver()->NotifyClose();
+    m_Timer = thread_join_raii();
 }
 
 void CTimerActive::Run()
