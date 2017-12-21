@@ -10,17 +10,17 @@ class CExpansionToCPU
     :public IStrategyExpansion
 {
 public:
-    explicit CExpansionToCPU(IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
+    explicit CExpansionToCPU(baseex::core::IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
 
     virtual int8_t GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const override;
 
 private:
-    IUsageCPU::Ptr m_UsageCPU;
+    baseex::core::IUsageCPU::Ptr m_UsageCPU;
     uint8_t m_MaxUsageCPU;
     unsigned int m_CountMinThread;
 };
 
-CExpansionToCPU::CExpansionToCPU(IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
+CExpansionToCPU::CExpansionToCPU(baseex::core::IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
     :m_UsageCPU(aUsageCPU), m_MaxUsageCPU(aMaxUsageCPU), m_CountMinThread(aCountMinThread)
 {}
 
@@ -41,7 +41,7 @@ int8_t CExpansionToCPU::GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks,
     return lDiff;
 }
 
-IStrategyExpansion::Ptr CreateExpansionToCPU(IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
+IStrategyExpansion::Ptr CreateExpansionToCPU(baseex::core::IUsageCPU::Ptr aUsageCPU, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
 {
     return std::make_shared<CExpansionToCPU>(aUsageCPU, aMaxUsageCPU, aCountMinThread);
 }

@@ -1,6 +1,6 @@
 #include <threadpoolex/core/ITaskEx.hpp>
 #include <threadpoolex/core/ITaskExceptions.hpp>
-#include <threadpoolex/core/RAII.hpp>
+#include <baseex/core/RAII.hpp>
 
 #include <mutex>
 
@@ -50,15 +50,15 @@ void CTaskEx::Execute()
 {
     try
     {
-        CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
+        baseex::core::CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
             [](CObservableTask::Ptr aObserver) { aObserver->NotifyComplete(); });
-        CRAII<void> lTime(
-            [this]() { lock_guard_ex<std::mutex> lLock(m_TimeMutex); m_Start = std::chrono::steady_clock::now(); },
-            [this]() { lock_guard_ex<std::mutex> lLock(m_TimeMutex); m_End = std::chrono::steady_clock::now(); });
-        set_values_raii<decltype(m_IsProcessing)> lProcessing(m_IsProcessing, true, false);
+        baseex::core::CRAII<void> lTime(
+            [this]() { baseex::core::lock_guard_ex<std::mutex> lLock(m_TimeMutex); m_Start = std::chrono::steady_clock::now(); },
+            [this]() { baseex::core::lock_guard_ex<std::mutex> lLock(m_TimeMutex); m_End = std::chrono::steady_clock::now(); });
+        baseex::core::set_values_raii<decltype(m_IsProcessing)> lProcessing(m_IsProcessing, true, false);
         m_Task->Execute();
     }
-    CATCH_CODE_ERROR(exceptions_base::error_base, this->GetObserver()->NotifyError);
+    CATCH_CODE_ERROR(baseex::core::exceptions_base::error_base, this->GetObserver()->NotifyError);
 }
 
 ITaskEx::Ptr CreateTaskEx(ITask::Ptr aTask)

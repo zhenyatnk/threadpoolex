@@ -1,6 +1,6 @@
 #pragma once
 
-#include <threadpoolex/core/IObserver.hpp>
+#include <baseex/core/IObserver.hpp>
 #include <threadpoolex/core/export.hpp>
 
 #include <list>
@@ -11,7 +11,7 @@ namespace threadpoolex {
 namespace core {
 
 class THREADPOOLEX_CORE_EXPORT IObserverTask
-    :public IObserverError
+    :public baseex::core::IObserverError
 {
 public:
     using Ptr = std::shared_ptr<IObserverTask>;
@@ -56,7 +56,7 @@ public:
 
 class THREADPOOLEX_CORE_EXPORT CObservableTask
     :public virtual IObservableTask,
-     public INotifierError,
+     public baseex::core::INotifierError,
      public INotifierTaskStart,
      public INotifierTaskComplete
 {
@@ -96,7 +96,7 @@ private:
     std::list<IObserverTask::Ptr> m_ListObservers;
 };
 
-typedef CBaseObservable<IObservableTask, CObservableTask, IObserverTask> CBaseObservableTask;
+typedef baseex::core::CBaseObservable<IObservableTask, CObservableTask, IObserverTask> CBaseObservableTask;
 
 //------------------------------------------------------------------------------------------------------------------
 class THREADPOOLEX_CORE_EXPORT EmptyObserverTask

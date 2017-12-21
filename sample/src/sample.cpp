@@ -1,19 +1,19 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/ISystemInfo.hpp>
-#include <threadpoolex/core/ITimerActive.hpp>
+#include <baseex/core/ISystemInfo.hpp>
+#include <baseex/core/ITimerActive.hpp>
 
 #include <stdio.h>
 #include <iostream>
 
-using namespace threadpoolex::core;
+using namespace baseex::core;
 
 namespace
 {
 class CObserverPrintCPU
-    :public EmptyObserverTimer
+    :public baseex::core::EmptyObserverTimer
 {
 public:
-    CObserverPrintCPU(ISystemInfo::Ptr aSysInfo)
+    CObserverPrintCPU(baseex::core::ISystemInfo::Ptr aSysInfo)
         :m_SysInfo(aSysInfo)
     {}
 
@@ -33,7 +33,7 @@ private:
 
 int main(int ac, char** av)
 {
-    threadpoolex::core::ITimerActive::Ptr lTimer = CreateTimerActive(1000);
+    ITimerActive::Ptr lTimer = CreateTimerActive(1000);
     lTimer->AddObserver(std::make_shared<CObserverPrintCPU>(CreateSystemInfo()));
 
     while (true);

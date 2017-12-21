@@ -1,4 +1,4 @@
-#include <threadpoolex/core/RAII.hpp>
+#include <baseex/core/RAII.hpp>
 #include <threadpoolex/core/ITaskExceptions.hpp>
 #include <threadpoolex/core/ITaskWait.hpp>
 
@@ -51,12 +51,12 @@ void CTaskWait::Execute()
 {
     try
     {
-        CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
+        baseex::core::CRAII<CObservableTask::Ptr> l(this->GetObserver(), [](CObservableTask::Ptr aObserver) { aObserver->NotifyStart(); },
             [](CObservableTask::Ptr aObserver) { aObserver->NotifyComplete(); });
         m_Task->Execute();
         m_Promise.set_value();
     }
-    catch (exceptions_base::error_base &aErr)
+    catch (baseex::core::exceptions_base::error_base &aErr)
     {
         this->GetObserver()->NotifyError(aErr.what(), aErr.GetErrorCode());
         m_Promise.set_exception(std::current_exception());

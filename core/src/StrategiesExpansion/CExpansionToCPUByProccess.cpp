@@ -8,17 +8,17 @@ class CExpansionToCPUByProccess
     :public IStrategyExpansion
 {
 public:
-    explicit CExpansionToCPUByProccess(IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
+    explicit CExpansionToCPUByProccess(baseex::core::IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread);
 
     virtual int8_t GetOptimalDiffWorkers(unsigned int aCountUnworkingTasks, unsigned int aCountExistsThreads) const override;
 
 private:
-    IUsageCPUProccess::Ptr m_UsageCPUProccess;
+    baseex::core::IUsageCPUProccess::Ptr m_UsageCPUProccess;
     uint8_t m_MaxUsageCPU;
     unsigned int m_CountMinThread;
 };
 
-CExpansionToCPUByProccess::CExpansionToCPUByProccess(IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
+CExpansionToCPUByProccess::CExpansionToCPUByProccess(baseex::core::IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
     :m_UsageCPUProccess(aUsageCPUProccess), m_MaxUsageCPU(aMaxUsageCPU), m_CountMinThread(aCountMinThread)
 {}
 
@@ -39,7 +39,7 @@ int8_t CExpansionToCPUByProccess::GetOptimalDiffWorkers(unsigned int aCountUnwor
     return lDiff;
 }
 
-IStrategyExpansion::Ptr CreateExpansionToCPUByProccess(IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
+IStrategyExpansion::Ptr CreateExpansionToCPUByProccess(baseex::core::IUsageCPUProccess::Ptr aUsageCPUProccess, uint8_t aMaxUsageCPU, unsigned int aCountMinThread)
 {
     return std::make_shared<CExpansionToCPUByProccess>(aUsageCPUProccess, aMaxUsageCPU, aCountMinThread);
 }

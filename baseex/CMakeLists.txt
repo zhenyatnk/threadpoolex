@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-set(_project_name googletest)
+set(_project_name baseex)
 
 #
 # Parameters repository
 #
-set(${_project_name}_repo "https://github.com/google/googletest.git")
-set(${_project_name}_tag "release-1.8.0")
+set(${_project_name}_repo "https://github.com/zhenyatnk/baseex.git")
+set(${_project_name}_tag "master")
 
 set(${_project_name}_main_dir ${CMAKE_CURRENT_BINARY_DIR})
 

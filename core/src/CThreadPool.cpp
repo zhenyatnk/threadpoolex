@@ -1,7 +1,7 @@
 #include <threadpoolex/core/IThreadPool.hpp>
-#include <threadpoolex/core/TLockingForce.hpp>
-#include <threadpoolex/core/TNotifier.hpp>
-#include <threadpoolex/core/RAII.hpp>
+#include <baseex/core/TLockingForce.hpp>
+#include <baseex/core/TNotifier.hpp>
+#include <baseex/core/RAII.hpp>
 
 #include <vector>
 #include <deque>
@@ -12,7 +12,7 @@ namespace core {
 namespace {
 //---------------------------------------------------------------
 
-using TDequeTasks = TLockingEx<std::deque<ITask::Ptr>>;
+using TDequeTasks = baseex::core::TLockingEx<std::deque<ITask::Ptr>>;
 
 //---------------------------------------------------------------
 class IThread
@@ -42,7 +42,7 @@ protected:
 
 private:
     std::shared_ptr<TDequeTasks> m_Tasks;
-    thread_join_raii m_ThreadRaii;
+    baseex::core::thread_join_raii m_ThreadRaii;
     std::atomic_bool m_Stop;
 };
 
@@ -55,7 +55,7 @@ CWorker::CWorker(std::shared_ptr<TDequeTasks> aTasks)
 CWorker::~CWorker()
 {
     m_Stop = true;
-    m_ThreadRaii = thread_join_raii();
+    m_ThreadRaii = baseex::core::thread_join_raii();
 }
 
 void CWorker::SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks)
@@ -65,7 +65,7 @@ void CWorker::SetDequeTasksNonLock(std::shared_ptr<TDequeTasks> aTasks)
 
 void CWorker::Run()
 {
-    m_ThreadRaii = thread_join_raii(std::thread(
+    m_ThreadRaii = baseex::core::thread_join_raii(std::thread(
     [this]()
     {
         while (true)
@@ -82,7 +82,7 @@ void CWorker::Run()
             {
                 ITask::Ptr lTask;
                 {
-                    lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+                    baseex::core::lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
 
                     if (!m_Tasks->empty())
                     {
@@ -132,25 +132,25 @@ CThreadPool::CThreadPool(unsigned int aCountStartThreads, IStrategyExpansion::Pt
 
 void CThreadPool::AddTask(ITask::Ptr aTask)
 {
-    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    baseex::core::force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_back(aTask);
 }
 
 void CThreadPool::AddTasks(const std::vector<ITask::Ptr>& aTasks)
 {
-    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    baseex::core::force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->insert(m_Tasks->end(), aTasks.begin(), aTasks.end());
 }
 
 void CThreadPool::AddTaskToTop(ITask::Ptr aTask)
 {
-    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    baseex::core::force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     m_Tasks->push_front(aTask);
 }
 
 void CThreadPool::TryExpansion()
 {
-    force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
+    baseex::core::force_lock_guard_ex<std::shared_ptr<TDequeTasks>> lock(m_Tasks);
     TryExpansionNonLock();
 }
 
