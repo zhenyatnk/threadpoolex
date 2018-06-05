@@ -33,7 +33,7 @@ public:
 
     void Execute()
     {
-        throw std::exception("test");
+        throw std::runtime_error("test");
     }
 };
 
@@ -50,7 +50,7 @@ public:
 //--------------------------------------------------------------------------------------------------------------------------------------
 TEST_F(CTaskWait_test, simple)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
     std::mutex lMutex;
     lMutex.lock();
 
@@ -68,7 +68,7 @@ TEST_F(CTaskWait_test, simple)
 
 TEST_F(CTaskWait_test, excpetion)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
 
     IWait::Ptr waiter;
     ITask::Ptr lTask = CreateTaskWait(std::make_shared<ExceptionTask>(), waiter);

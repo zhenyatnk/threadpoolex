@@ -76,7 +76,7 @@ TEST_F(CTaskEx_test, execute_call)
 
 TEST_F(CTaskEx_test, execute_IsProcessing)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
     std::mutex lMutex;
     lMutex.lock();
 
@@ -94,7 +94,7 @@ TEST_F(CTaskEx_test, execute_IsProcessing)
 
 TEST_F(CTaskEx_test, execute_GetTimeStart)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
     std::mutex lMutex;
     lMutex.lock();
 
@@ -109,7 +109,7 @@ TEST_F(CTaskEx_test, execute_GetTimeStart)
 
 TEST_F(CTaskEx_test, execute_GetTimeEnd)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
     std::mutex lMutex;
     lMutex.lock();
 
@@ -125,7 +125,7 @@ TEST_F(CTaskEx_test, execute_GetTimeEnd)
 
 TEST_F(CTaskEx_test, wait)
 {
-    std::atomic_int lReady = 0;
+    std::atomic_int lReady(0);
     std::mutex lMutex;
     lMutex.lock();
 
